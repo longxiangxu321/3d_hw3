@@ -7,22 +7,35 @@
 
 #include "definitions.h"
 
-std::vector<Point_3> points;
+
 
 struct Face {
+
     std::vector<unsigned long> vertices; // indices in vector of points
+
+    Face() = default;
+    Face(unsigned long v0, unsigned long v1, unsigned long v2): vertices({v0, v1, v2}) {}
 };
 
 struct Shell {
+
     std::vector<Face> faces;
+
+    Shell() = default;
+
 };
 
 struct Object {
+
     std::string id;
     std::vector<Shell> shells;
+
+    Object() = default;
+    Object(std::string& name):id(name) {}
+
 };
 
-std::map<std::string, Object> objects;
+
 
 
 #endif //HW3_GEOMETRY_H
