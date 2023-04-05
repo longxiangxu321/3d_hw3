@@ -31,8 +31,10 @@ int main() {
                 if (!first_object_read) {
                     first_object_read = true;
                 } else {
+                    current_object.shells.push_back(current_shell);
                     objects.push_back(current_object);
-                    current_object.shells.clear();
+                    current_object = Object();
+                    current_shell = Shell();
                 }
                 current_object.id = line;
             }
@@ -41,7 +43,7 @@ int main() {
                     continue;
                 } else {
                     current_object.shells.push_back(current_shell);
-                    current_shell.faces.clear();
+                    current_shell = Shell();
                 }
             }
             if (line[0] == 'f') {
@@ -64,11 +66,12 @@ int main() {
                 if (y > max_y) max_y = y;
                 if (z > max_z) max_z = z;
             }
-            if (line.empty() || line[0] == '#') {  // Skip empty lines and lines starting with '#'
+            else {
                 continue;
             }
         }
-        if (!current_object.shells.empty()) {
+        if (!current_shell.faces.empty()) {
+            current_object.shells.push_back(current_shell);
             objects.push_back(current_object);
         }
     }
@@ -77,17 +80,17 @@ int main() {
 
     std::cout<<objects.size()<<std::endl;
     std::cout<<points.size()<<std::endl;
-    int i = 0;
+//    int i = 0;
     for (auto const& object: objects) {
-        std::cout<<object.id<< std::endl;
-    }
-//        std::cout<<"object "<< i <<" "<<object.id<<" shell number: "<<object.shells.size() << std::endl;
-//        int j = 0;
+        std::cout<<"object "<<" "<<object.id<<std::endl;
+        std::cout<< " shell number: "<<object.shells.size() << std::endl;
+        for (auto const& shell: object.shells) {
+            std::cout << "face number: " << shell.faces.size() << std::endl;
+        }
 //        for (auto const& shell: object.shells) {
-//            std::cout<<"shell "<< j<< " face number: "<<shell.faces.size()<<std::endl;
-//            j++;
+//            std::cout<<"shell "<< " face number: "<<shell.faces.size()<<std::endl;
 //        }
-//        i++;}
+    }
 
     auto x_num = static_cast<unsigned int>(std::ceil((max_x - min_x) / resolution));
     auto y_num = static_cast<unsigned int>(std::ceil((max_y - min_y) / resolution));
