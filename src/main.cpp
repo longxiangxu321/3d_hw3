@@ -131,18 +131,18 @@ int main() {
                 voxel_tree.intersected_nodes(triangle, output_iterator);
 
                 for (auto it = o1.begin(); it != o1.end(); ++it) {
-                    for (auto jt = it->begin(); jt!=it->end(); jt++) {  // only one point in each node
-                        double xmin = jt -> x() - resolution;
-                        double ymin = jt -> y() - resolution;
-                        double zmin = jt -> z() - resolution;
-                        double xmax = jt -> x() - resolution;
-                        double ymax = jt -> y() - resolution;
-                        double zmax = jt -> z() - resolution;
-                    if (face.intersect(Bbox_3(xmin, ymin, zmin, xmax, ymax, zmax))) {
-                        continue;  // apply precise line triangle test here
+                    for (auto jt = it->begin(); jt != it->end(); jt++) {  // only one point in each node
+                        double xmin = jt->x() - resolution;
+                        double ymin = jt->y() - resolution;
+                        double zmin = jt->z() - resolution;
+                        double xmax = jt->x() + resolution;
+                        double ymax = jt->y() + resolution;
+                        double zmax = jt->z() + resolution;
+                        if (face.intersect(Bbox_3(xmin, ymin, zmin, xmax, ymax, zmax))) {
+                            continue;  // apply precise line triangle test here
+                        }
                     }
                 }
-
             }
         }
     }
