@@ -10,15 +10,29 @@
 
 
 struct Face {
-
+    std::string id;
     std::vector<unsigned long> vertices; // indices in vector of points
 
     Face() = default;
     Face(unsigned long v0, unsigned long v1, unsigned long v2): vertices({v0, v1, v2}) {}
+
+    bool intersect(Bbox_3 l,Triangle_3 triangle) const {
+        if (!CGAL::do_intersect(triangle.supporting_plane(), l)) {
+            // do not intersect.
+            return false;//SUPPORTING_PLANE IS THE PLANE AND WITHOUT it caculating both the boundary and is more costing
+        }
+
+        if (CGAL::do_intersect(triangle, l)) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
 };
 
 struct Shell {
-
+    std::string id;
     std::vector<Face> faces;
 
     Shell() = default;
@@ -32,6 +46,15 @@ struct Object {
 
     Object() = default;
     Object(std::string& name):id(name) {}
+
+    void set_id() {
+        for (auto &shell: shells) {
+            shell.id = id;
+            for (auto &face: shell.faces) {
+                face.id = id;
+            }
+        }
+    }
 
 };
 
