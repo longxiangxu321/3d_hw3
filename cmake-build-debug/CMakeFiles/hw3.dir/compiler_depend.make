@@ -2791,7 +2791,8 @@ CMakeFiles/hw3.dir/src/main.cpp.o: ../src/main.cpp \
   /usr/local/include/CGAL/linear_least_squares_fitting_tetrahedra_3.h \
   /usr/local/include/CGAL/linear_least_squares_fitting_spheres_3.h \
   /usr/local/include/CGAL/Triangulation_vertex_base_with_id_2.h \
-  /usr/local/include/CGAL/Triangulation_face_base_with_info_2.h
+  /usr/local/include/CGAL/Triangulation_face_base_with_info_2.h \
+  ../src/voxelgrid.h
 
 
 /usr/local/include/CGAL/Triangulation_face_base_with_info_2.h:
@@ -5703,6 +5704,8 @@ CMakeFiles/hw3.dir/src/main.cpp.o: ../src/main.cpp \
 /usr/include/eigen3/Eigen/src/SparseCore/SparseFuzzy.h:
 
 /usr/include/x86_64-linux-gnu/c++/9/bits/gthr-default.h:
+
+../src/voxelgrid.h:
 
 /usr/local/include/CGAL/Intersections_2/Bbox_2_Circle_2.h:
 

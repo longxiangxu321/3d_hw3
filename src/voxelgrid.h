@@ -5,6 +5,7 @@
 #ifndef HW3_VOXELGRID_H
 #define HW3_VOXELGRID_H
 
+
 struct VoxelGrid {
     std::vector<unsigned int> voxels;
     unsigned int max_x, max_y, max_z;
