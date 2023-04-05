@@ -2,7 +2,7 @@
 #include "voxelgrid.h"
 #include <iostream>
 #include <sstream>
-const std::string input_file = "../data/objs/Ifc2x3.obj";
+const std::string input_file = "../data/objs/ifc2x3.obj";
 const float resolution = 0.1;
 
 int main() {
@@ -80,24 +80,72 @@ int main() {
 
     std::cout<<objects.size()<<std::endl;
     std::cout<<points.size()<<std::endl;
-//    int i = 0;
+
     for (auto const& object: objects) {
         std::cout<<"object "<<" "<<object.id<<std::endl;
         std::cout<< " shell number: "<<object.shells.size() << std::endl;
         for (auto const& shell: object.shells) {
             std::cout << "face number: " << shell.faces.size() << std::endl;
-        }
-//        for (auto const& shell: object.shells) {
-//            std::cout<<"shell "<< " face number: "<<shell.faces.size()<<std::endl;
-//        }
+        }}
+
+    for (auto &object: objects) {
+        object.set_id();
     }
+
 
     auto x_num = static_cast<unsigned int>(std::ceil((max_x - min_x) / resolution));
     auto y_num = static_cast<unsigned int>(std::ceil((max_y - min_y) / resolution));
     auto z_num = static_cast<unsigned int>(std::ceil((max_z - min_z) / resolution));
-    VoxelGrid voxel_grid(x_num, y_num, z_num);
+    VoxelGrid voxel_grid(x_num, y_num, z_num, resolution);
+
+    std::cout<<x_num<<std::endl;
+    std::cout<<y_num<<std::endl;
+    std::cout<<z_num<<std::endl;
+    std::cout<<voxel_grid.resolution<<std::endl;
+    point_vector pts;
+
+    for (unsigned int i=0; i<x_num; i++) {
+        for (unsigned int j=0; j<y_num; j++) {
+            for (unsigned int k=0; k<z_num; k++) {
+                Point3 vc = voxel_grid.center(i,j,k);
+                pts.push_back(vc);
+            }
+        }
+    }
+
+    Octree voxel_tree(pts);
+    int max_depth = std::ceil(std::log(points.size())/ std::log(8));
+    voxel_tree.refine(max_depth,1);
 
 
+
+    for (auto const &object: objects) {
+        for (auto const &shell: object.shells) {
+            for (auto const &face: shell.faces) {
+                Point3 v0 = points[face.vertices[0]];
+                Point3 v1 = points[face.vertices[1]];
+                Point3 v2 = points[face.vertices[2]];
+                Triangle_3 triangle(v0, v1, v2);
+                output_nodes o1;
+                auto output_iterator = std::back_inserter(o1);
+                voxel_tree.intersected_nodes(triangle, output_iterator);
+
+                for (auto it = o1.begin(); it != o1.end(); ++it) {
+                    for (auto jt = it->begin(); jt!=it->end(); jt++) {  // only one point in each node
+                        double xmin = jt -> x() - resolution;
+                        double ymin = jt -> y() - resolution;
+                        double zmin = jt -> z() - resolution;
+                        double xmax = jt -> x() - resolution;
+                        double ymax = jt -> y() - resolution;
+                        double zmax = jt -> z() - resolution;
+                    if (face.intersect(Bbox_3(xmin, ymin, zmin, xmax, ymax, zmax))) {
+                        continue;  // apply precise line triangle test here
+                    }
+                }
+
+            }
+        }
+    }
 
     return 0;
 
