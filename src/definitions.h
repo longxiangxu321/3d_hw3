@@ -47,6 +47,7 @@ typedef K::Plane_3                  Plane;
 typedef K::Vector_3 Vector3;
 typedef K::Triangle_3 Triangle_3;
 typedef CGAL::Bbox_3 Bbox_3;
+typedef CGAL::Segment_3<K> Segment_3;
 
 typedef CGAL::Triangulation_vertex_base_with_id_2 <K>             Vb;
 typedef CGAL::Triangulation_face_base_with_info_2<FaceInfo2, K>   Fbb;

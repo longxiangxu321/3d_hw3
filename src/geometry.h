@@ -16,18 +16,18 @@ struct Face {
     Face() = default;
     Face(unsigned long v0, unsigned long v1, unsigned long v2): vertices({v0, v1, v2}) {}
 
-    bool intersect(Bbox_3 l,Triangle_3 triangle) const {
-        if (!CGAL::do_intersect(triangle.supporting_plane(), l)) {
+    bool intersect(double xmin,double ymin,double zmin,double xmax,double ymax,double zmax,double xmid,double ymid,double zmid,Triangle_3 triangle) const {
+        Segment_3 l1(Point3(xmid,ymid,zmin),Point3(xmid,ymid,zmax));
+        Segment_3 l2(Point3(xmin,ymid,zmid),Point3(xmax,ymid,zmid));
+        Segment_3 l3(Point3(xmid,ymin,zmid),Point3(xmid,ymax,zmid));
+
+        if (!CGAL::do_intersect(triangle, l1)&&!CGAL::do_intersect(triangle, l2)&&!CGAL::do_intersect(triangle, l3)) {
             // do not intersect.
             return false;//SUPPORTING_PLANE IS THE PLANE AND WITHOUT it caculating both the boundary and is more costing
         }
-
-        if (CGAL::do_intersect(triangle, l)) {
+        else {
             return true;
-        } else {
-            return false;
         }
-
     }
 };
 

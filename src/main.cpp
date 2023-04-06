@@ -133,14 +133,17 @@ int main() {
 
                 for (auto it = o1.begin(); it != o1.end(); ++it) {
                     for (auto jt = it->begin(); jt!=it->end(); jt++) {  // only one point in each node
-                        double xmin = jt -> x() - resolution;
-                        double ymin = jt -> y() - resolution;
-                        double zmin = jt -> z() - resolution;
-                        double xmax = jt -> x() + resolution;
-                        double ymax = jt -> y() + resolution;
-                        double zmax = jt -> z() + resolution;// WQX EDITED
-                        Bbox_3 bbox = Bbox_3(xmin, ymin, zmin, xmax, ymax, zmax);
-                        if (face.intersect(bbox,triangle)) {
+                        double xmin = jt -> x() - resolution/2;
+                        double ymin = jt -> y() - resolution/2;
+                        double zmin = jt -> z() - resolution/2;
+                        double xmax = jt -> x() + resolution/2;
+                        double ymax = jt -> y() + resolution/2;
+                        double zmax = jt -> z() + resolution/2;
+                        double xmid = jt -> x() ;
+                        double ymid = jt -> y();
+                        double zmid = jt -> z();
+
+                        if (face.intersect(xmin,ymin,zmin,xmax,ymax,zmax,xmid,ymid,zmid,triangle)) {
                             continue;  // apply precise line triangle test here
                         }
                     }
