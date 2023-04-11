@@ -54,6 +54,7 @@ struct VoxelGrid {
         int i = x - 1;
         int j = y - 1;
         int k = z - 1;
+        //check its former three connected neighbour,if one of them is exterior,return true
                 if(i>=0){
                     if(voxel_grid(i,y,z) == -1) { return true; }
                 }
@@ -70,21 +71,21 @@ struct VoxelGrid {
     void mark_exterior(VoxelGrid &voxel_grid) {
         voxel_grid(0,0,0) = -1;
         ex_voxels.emplace_back(0);
-        for(int i = 0;i<max_z;i++){
+        for(int i = 0;i<max_x;i++){
             for(int j = 0;j<max_y;j++){
-                for(int k = 0;k<max_x;k++){
+                for(int k = 0;k<max_z;k++){
                     if(i==0&&j==0&&k==0){
-                        continue;
+                        continue;//skip 0,0,0
                     }
                     else{
-                        if(voxel_grid(k,j,i)==0) {
-                            if (get_neighbour(k, j, i, voxel_grid)) {
-                                voxel_grid(k, j, i) = -1;
+                        if(voxel_grid(i,j,k)==0) {//make sure this is not building voxel
+                            if (get_neighbour(i, j, k, voxel_grid)) {
+                                voxel_grid(i, j, k) = -1;//if one of the neigbour is exterior,it's connected and is exterior too
                                 ex_voxels.emplace_back(0);
                             }
                             else{
-                                voxel_grid(k, j, i) = -2;
-                                in_voxels.emplace_back(0);
+                                in_voxels.emplace_back(0);// this is interior, the value will be changed in mark_room
+                                //so needn't change the value rn
                             }
                         }
                         else{

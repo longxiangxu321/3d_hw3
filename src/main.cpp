@@ -198,14 +198,40 @@ int main() {
                 }
             }
         }
-        voxel_grid.mark_exterior(voxel_grid);
-        std::cout << "All num: "<< voxel_grid.voxels.size() <<std::endl;
-        std::cout << "exterior_num: "<< voxel_grid.ex_voxels.size() <<std::endl;
-        std::cout << "interior_num: "<< voxel_grid.in_voxels.size() <<std::endl;
-//        std::cout << "building_num: "<< voxel_grid.building.size() <<std::endl;
+
+
+    }
+    voxel_grid.mark_exterior(voxel_grid);//mark exterior, exterior = -1,interior stays 0
+    //the next loop is to check the result,you can delete them later
+    int ex = 0;
+    int building = 0;
+    int in = 0;
+    int count = 0;
+    std::cout<<"Voxel_grid_x_num: "<<x_num<<std::endl;
+    std::cout<<"Voxel_grid_y_num: "<<y_num<<std::endl;
+    std::cout<<"Voxel_grid_z_num: "<<z_num<<std::endl;
+    for(int i = 0;i<x_num;i++) {
+        for (int j = 0; j < y_num; j++) {
+            for (int k = 0; k < z_num; k++) {
+                if (voxel_grid(i, j, k) == -1) {
+                    ex++;
+                    count++;
+                } else if (voxel_grid(i, j, k) == 0) {
+                    in++;
+                    count++;
+                } else {
+                    building++;
+                    count++;
+                }
+            }
+        }
+    }
+        std::cout << "All num: "<< voxel_grid.voxels.size()<<" "<< count <<std::endl;
+        std::cout << "exterior_num: "<< voxel_grid.ex_voxels.size() <<" "<<ex<<std::endl;
+        std::cout << "interior_num: "<< voxel_grid.in_voxels.size() <<" "<<in<<std::endl;
+        std::cout << "building_num: "<<building <<std::endl;
 
 
 
         return 0;
-    }
 }
