@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/mnt/d/Q3/modelling/hw3/src/main.cpp" "CMakeFiles/hw3.dir/src/main.cpp.o" "gcc" "CMakeFiles/hw3.dir/src/main.cpp.o.d"
+  "/mnt/d/Delft/q3/threeD/A3/3d_hw3/src/main.cpp" "CMakeFiles/hw3.dir/src/main.cpp.o" "gcc" "CMakeFiles/hw3.dir/src/main.cpp.o.d"
   )
 
 # Targets to which this target links.

@@ -57,10 +57,10 @@ RM = /usr/local/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /mnt/d/Q3/modelling/hw3
+CMAKE_SOURCE_DIR = /mnt/d/Delft/q3/threeD/A3/3d_hw3
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /mnt/d/Q3/modelling/hw3/cmake-build-debug
+CMAKE_BINARY_DIR = /mnt/d/Delft/q3/threeD/A3/3d_hw3/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/d/Q3/modelling/hw3/cmake-build-debug/CMakeFiles /mnt/d/Q3/modelling/hw3/cmake-build-debug//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/d/Delft/q3/threeD/A3/3d_hw3/cmake-build-debug/CMakeFiles /mnt/d/Delft/q3/threeD/A3/3d_hw3/cmake-build-debug//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/d/Q3/modelling/hw3/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/d/Delft/q3/threeD/A3/3d_hw3/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

@@ -2,8 +2,27 @@
 #include "voxelgrid.h"
 #include <iostream>
 #include <sstream>
-const std::string input_file = "../data/objs/ifc2x3_weld.obj";
+const std::string input_file = "../data/objs/Ifc2x3_weld.obj";
 const float resolution = 0.1;
+
+
+inline bool intersect(const double xmin, const double ymin, const double zmin, const double xmax, const double ymax, const double zmax,
+                      const double xmid, const double ymid, const double zmid, Triangle_3 triangle) {
+//    Inputs are voxel center and bounding box coordinates
+    Segment_3 l1(Point3(xmin,ymid,zmid),Point3(xmax,ymid,zmid)); // x-axis
+    Segment_3 l2(Point3(xmid,ymin,zmid),Point3(xmid,ymax,zmid)); // y-axis
+    Segment_3 l3(Point3(xmid,ymid,zmin),Point3(xmid,ymid,zmax)); // z-axis
+
+    if (!CGAL::do_intersect(triangle, l1) && !CGAL::do_intersect(triangle, l2) &&
+        !CGAL::do_intersect(triangle, l3)) {
+        // do not intersect.
+        return false;
+    }
+    else {
+        return true;
+    }
+}
+
 
 int main() {
     std::ifstream input_stream;
@@ -23,7 +42,9 @@ int main() {
     Shell current_shell;
 
     bool first_object_read = false;
+    int index = 1;
 
+    // 2. read data into memory
     if (input_stream.is_open()) {
         std::string line;
         while (std::getline(input_stream, line)) {
@@ -37,6 +58,8 @@ int main() {
                     current_shell = Shell();
                 }
                 current_object.id = line;
+                current_object.numeric_id = index;
+                index++;
             }
             if (line[0] == 'u') {//new shell
                 if (current_shell.faces.empty()) {
@@ -79,7 +102,7 @@ int main() {
 
 
     std::cout<<"Total number of Building objects: "<<objects.size()<<std::endl;
-    std::cout<<"Total number of Building vertices: "<<points.size()<<std::endl;
+    std::cout<<"Total number of vertices: "<<points.size()<<std::endl;
 
 //    for (auto const& object: objects) {
 //        std::cout<<"object "<<" "<<object.id<<std::endl;
@@ -94,10 +117,10 @@ int main() {
     //points, list of Point3
 
 
-    // Step 3 - Voxel grid creation
-    auto x_num = static_cast<unsigned int>(std::ceil((max_x - min_x) / resolution));
-    auto y_num = static_cast<unsigned int>(std::ceil((max_y - min_y) / resolution));
-    auto z_num = static_cast<unsigned int>(std::ceil((max_z - min_z) / resolution));
+    // 3. Voxel grid creation
+    auto x_num = static_cast<unsigned int>(std::ceil((max_x - min_x) / resolution)) + 1; // + 1 tp ensure voxel grid larger than building bbox
+    auto y_num = static_cast<unsigned int>(std::ceil((max_y - min_y) / resolution)) + 1;
+    auto z_num = static_cast<unsigned int>(std::ceil((max_z - min_z) / resolution)) + 1;
     VoxelGrid voxel_grid(x_num, y_num, z_num, resolution);
 
     std::cout<<"Voxel_grid_x_num: "<<x_num<<std::endl;
@@ -105,44 +128,41 @@ int main() {
     std::cout<<"Voxel_grid_z_num: "<<z_num<<std::endl;
     std::cout<<"Voxel_grid_resolution: "<<voxel_grid.resolution<<std::endl;
     point_vector pts;
-    Point3 corner(min_x, min_y, min_y);
+    Point3 origin(min_x, min_y, min_z);
 
 
-    // Step 4 - Voxelisation of triangles
+    // 4. Voxelisation of triangles
+
+    // 4.1 create octree to speed up search
     for (unsigned int i=0; i<x_num; i++) {
         for (unsigned int j=0; j<y_num; j++) {
             for (unsigned int k=0; k<z_num; k++) {//WQX EDITED
-                Point3 vc = voxel_grid.center(i,j,k, corner);
+                Point3 vc = voxel_grid.center(i,j,k, origin);
                 pts.push_back(vc);
             }
         }
     }
 
+    double max_span = std::max({x_num, y_num, z_num}) * resolution; // the length of the longest dimension
+
     pts.push_back(Point3(min_x, min_y, min_z));
-    pts.push_back(Point3(max_x, max_y, min_z+10));
+    pts.push_back(Point3(min_x + max_span, min_y + max_span, min_z + max_span));
 
     Octree voxel_tree(pts, CGAL::Identity_property_map<Point3>(), 1.0);
     auto rnode = voxel_tree.root();
-//    std::cout << rnode << std::endl;
-//    std::cout << "building min x: "<< min_x << " y: "<< min_y << " z: " << min_z << std::endl;
-//    std::cout << "building max x: "<< max_x << " y: "<< max_x << " z: " << max_z << std::endl;
 
 
     auto bo1 = voxel_tree.bbox(rnode);
-//    std::cout << bo1 << std::endl; // return x_min, x_max, y_min, y_max, z_min, z_max of bbox
-//    std::cout<< bo1.x_span()<<std::endl;
-//    std::cout<< bo1.y_span()<<std::endl;
-//    std::cout<< bo1.z_span()<<std::endl;
-//
-//    std::cout<< bo1.xmin()<<std::endl;
-//    std::cout<< bo1.xmax()<<std::endl;
-//    std::cout<< bo1.z_span()<<std::endl;
 
+    //   ensure octree root node aligned with the voxel grid
+    assert(bo1.x_span() == bo1.y_span() == bo1.z_span() && bo1.x_span() == max_span);
+    assert(bo1.xmin() == min_x && bo1.ymin() == min_y && bo1.zmin() == min_z);
 
     int max_depth = std::ceil(std::log(points.size())/ std::log(8));
     voxel_tree.refine(100,1);
 
 
+    // 4.2 intersection test
     for (auto const &object: objects) {
         for (auto const &shell: object.shells) {
             for (auto const &face: shell.faces) {
@@ -166,22 +186,26 @@ int main() {
                         double xmid = jt -> x();
                         double ymid = jt -> y();
                         double zmid = jt -> z();
-//                        std::cout << "v0 "<< v0 << " v1: "<< v1 << " v2: " << v2 << std::endl;
-//                        std::cout << "min x: "<< xmin << " y: "<< ymin << " z: " << zmin << std::endl;
-//                        std::cout << "max x: "<< xmax << " y: "<< ymax << " z: " << zmax << std::endl;
-//                        std::cout << "mid x: "<< xmid << " y: "<< ymid << " z: " << zmid << std::endl;
-//                        std::cout << "max x: "<< max_x << " y: "<< max_x << " z: " << max_z << std::endl;
-//                        std::cout << "min x: "<< min_x << " y: "<< min_y << " z: " << min_z << std::endl;
-//                        std::cout << "max x: "<< max_x << " y: "<< max_x << " z: " << max_z << std::endl;
 
-                        if (face.intersect(xmin, ymin, zmin, xmax, ymax, zmax, xmid, ymid, zmid, triangle)) {
-                            // apply precise line triangle test here
-                            voxel_grid.set_id(voxel_grid,xmid, ymid, zmid, corner,face);
+
+                        if (intersect(xmin, ymin, zmin, xmax, ymax, zmax, xmid, ymid, zmid, triangle)) {
+                            unsigned int voxel_x = std::ceil((xmid - origin.x() - resolution/2) / resolution);
+                            unsigned int voxel_y = std::ceil((ymid - origin.y() - resolution/2) / resolution);
+                            unsigned int voxel_z = std::ceil((zmid - origin.z() - resolution/2) / resolution);
+                            voxel_grid(voxel_x, voxel_y, voxel_z) = face.numeric_id;
                         }
                     }
                 }
             }
         }
+        voxel_grid.mark_exterior(voxel_grid);
+        std::cout << "All num: "<< voxel_grid.voxels.size() <<std::endl;
+        std::cout << "exterior_num: "<< voxel_grid.ex_voxels.size() <<std::endl;
+        std::cout << "interior_num: "<< voxel_grid.in_voxels.size() <<std::endl;
+//        std::cout << "building_num: "<< voxel_grid.building.size() <<std::endl;
+
+
+
         return 0;
     }
 }

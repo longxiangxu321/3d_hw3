@@ -1,1 +1,1 @@
-g++ -O2 -O3 -DNDEBUG CMakeFiles/hw3.dir/src/main.cpp.o -o hw3  /usr/lib/x86_64-linux-gnu/libgmpxx.so /usr/lib/x86_64-linux-gnu/libmpfr.so /usr/lib/x86_64-linux-gnu/libgmp.so -pthread 
+g++ -O2 -O3 -DNDEBUG CMakeFiles/hw3.dir/src/main.cpp.o -o hw3  /usr/lib/x86_64-linux-gnu/libgmpxx.so /usr/lib/x86_64-linux-gnu/libmpfr.so /usr/lib/x86_64-linux-gnu/libgmp.so 
