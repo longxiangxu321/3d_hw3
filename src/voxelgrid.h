@@ -84,7 +84,6 @@ struct VoxelGrid {
                             }
                             else{
                                 in_voxels.emplace_back(0);// this is interior, the value will be changed in mark_room
-                                //so needn't change the value rn
                             }
                         }
                         else{
