@@ -49,19 +49,19 @@ struct VoxelGrid {
         return cp;
     }
 
-    bool get_neighbour(int x,int y,int z,VoxelGrid &voxel_grid){
+    bool get_neighbour(unsigned int x,unsigned int y,unsigned int z,VoxelGrid &voxel_grid){
 
-        int i = x - 1;
-        int j = y - 1;
-        int k = z - 1;
+        unsigned int i = x + 1;
+        unsigned int j = y + 1;
+        unsigned int k = z + 1;
         //check its former three connected neighbour,if one of them is exterior,return true
-                if(i>=0){
-                    if(voxel_grid(i,y,z) == -1) { return true; }
+                if(i<=max_x){
+                    if(voxel_grid(i,y,z) == -1) { return true;}
                 }
-                if(j>=0){
+                if(j<=max_y){
                     if(voxel_grid(x,j,z) == -1) {return true;}
                 }
-                if(k>=0){
+                if(k<=max_z){
                     if(voxel_grid(x,y,k) == -1) { return true; }
                 }
                 return false;
@@ -69,13 +69,12 @@ struct VoxelGrid {
 
 
     void mark_exterior(VoxelGrid &voxel_grid) {
-        voxel_grid(0,0,0) = -1;
-        ex_voxels.emplace_back(0);
-        for(int i = 0;i<max_x;i++){
-            for(int j = 0;j<max_y;j++){
-                for(int k = 0;k<max_z;k++){
-                    if(i==0&&j==0&&k==0){
-                        continue;//skip 0,0,0
+        for(unsigned int i =max_x;i>0;i--){
+            for(unsigned int j = max_y;j>0;j--){
+                for(unsigned int k = max_z;k>0;k--){
+                    if(i==max_x&&j==max_y&&k==max_z){
+                        voxel_grid(max_x,max_y,max_z) = -1;
+                        ex_voxels.emplace_back(0);
                     }
                     else{
                         if(voxel_grid(i,j,k)==0) {//make sure this is not building voxel
