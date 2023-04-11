@@ -79,7 +79,7 @@ struct VoxelGrid {
                     else{
                         if(voxel_grid(i,j,k)==0) {//make sure this is not building voxel
                             if (get_neighbour(i, j, k, voxel_grid)) {
-                                voxel_grid(i, j, k) = -1;//if one of the neigbour is exterior,it's connected and is exterior too
+                                voxel_grid(i, j, k) = -1;//if one of the neighbour is exterior,it's connected and is exterior too
                                 ex_voxels.emplace_back(0);
                             }
                             else{
