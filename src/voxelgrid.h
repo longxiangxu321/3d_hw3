@@ -69,9 +69,9 @@ struct VoxelGrid {
 
 
     void mark_exterior(VoxelGrid &voxel_grid) {
-        for(unsigned int i =voxel_grid.max_x-1;i>0;i--){
-            for(unsigned int j = voxel_grid.max_y-1;j>0;j--){
-                for(unsigned int k = voxel_grid.max_z-1;k>0;k--){
+        for(int i =voxel_grid.max_x-1;i>=0;i--){
+            for(int j = voxel_grid.max_y-1;j>=0;j--){
+                for(int k = voxel_grid.max_z-1;k>=0;k--){
                     if(i==max_x-1&&j==max_y-1&&k==max_z-1){
                         voxel_grid(max_x-1,max_y-1,max_z-1) = -1;
                         ex_voxels.emplace_back(0);
