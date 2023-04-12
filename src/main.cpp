@@ -106,7 +106,7 @@ std::vector<Point3> read_geometry(const std::string &input_file, std::vector<Poi
 int main() {
     const std::string input_file = "../data/objs/ifc4.obj";
 //    const std::string output_file = "../data/objs/Ifc2voxel.obj";
-    const float resolution = 0.5;
+    const float resolution = 0.1;
 
     std::vector<Point3> points;
     std::vector<Object> objects;
@@ -117,17 +117,91 @@ int main() {
 
     std::cout << "Total number of Building objects: " << objects.size() << std::endl;
     std::cout << "Total number of vertices: " << points.size() << std::endl;
+    Point3 origin1 = Point3(origin.x()-resolution, origin.y()-resolution, origin.z() - resolution);
 
-    unsigned int x_num = (maxp.x() - origin.x()) / resolution + 1;
-    unsigned int y_num = (maxp.y() - origin.y()) / resolution + 1;
-    unsigned int z_num = (maxp.z() - origin.z()) / resolution + 1;
+    unsigned int x_num = (maxp.x() - origin1.x()) / resolution + 1;
+    unsigned int y_num = (maxp.y() - origin1.y()) / resolution + 1;
+    unsigned int z_num = (maxp.z() - origin1.z()) / resolution + 1;
     std::cout << "x,y,z numbers" << x_num << " " << y_num << " " << z_num<< std::endl;
 
 
-    Voxel_grid voxel_grid(origin, resolution, x_num, y_num,z_num);
+    Voxel_grid voxel_grid(origin1, resolution, x_num, y_num,z_num);
     const std::string output_file = "../data/objs/ifc4_voxel.obj";
-    voxel_grid.voxel2obj(output_file);
+//    voxel_grid.voxel2obj(output_file);
 
+    std::vector<Point3> pts;
+    //
+    for (unsigned int i=0; i<x_num; i++) {
+        for (unsigned int j=0; j<y_num; j++) {
+            for (unsigned int k=0; k<z_num; k++) {//WQX EDITED
+                Point3 vc = voxel_grid(i,j,k).center;
+                pts.push_back(vc);
+            }
+        }
+    }
+
+    double max_span = std::max({voxel_grid.length, voxel_grid.width, voxel_grid.height}); // the length of the longest dimension
+
+    pts.push_back(voxel_grid.origin_corner);
+    pts.push_back(Point3(voxel_grid.origin_corner.x() + max_span, voxel_grid.origin_corner.y() + max_span, voxel_grid.origin_corner.z() + max_span));
+
+    Octree voxel_tree(pts, CGAL::Identity_property_map<Point3>(), 1.0);
+    auto rnode = voxel_tree.root();
+
+
+    auto bo1 = voxel_tree.bbox(rnode);
+
+    //   ensure octree root node aligned with the voxel grid
+    assert(bo1.x_span() == bo1.y_span() == bo1.z_span() && bo1.x_span() == max_span);
+    assert(bo1.xmin() == min_x && bo1.ymin() == min_y && bo1.zmin() == min_z);
+
+    int max_depth = std::ceil(std::log(points.size())/ std::log(8));
+    voxel_tree.refine(100,1);
+
+
+    // 4.2 intersection test
+    for (auto const &object: objects) {
+        for (auto const &shell: object.shells) {
+            for (auto const &face: shell.faces) {
+                Point3 v0 = points[face.vertices[0]];
+                Point3 v1 = points[face.vertices[1]];
+                Point3 v2 = points[face.vertices[2]];
+                Triangle_3 triangle(v0, v1, v2);
+                output_nodes o1;//std::vector<Octree::Node> output_nodes;
+                auto output_iterator = std::back_inserter(o1);
+                voxel_tree.intersected_nodes(triangle, output_iterator);
+
+                for (auto it = o1.begin(); it != o1.end(); ++it) {
+                    for (auto jt = it->begin(); jt != it->end(); jt++) {  // only one point in each node
+                        // each octree node intersects with triangle, its size is same as the voxel grid
+                        double xmin = jt->x() - resolution / 2;
+                        double ymin = jt->y() - resolution / 2;
+                        double zmin = jt->z() - resolution / 2;
+                        double xmax = jt->x() + resolution / 2;
+                        double ymax = jt->y() + resolution / 2;
+                        double zmax = jt->z() + resolution / 2;
+                        double xmid = jt->x();
+                        double ymid = jt->y();
+                        double zmid = jt->z();
+
+
+                        if (intersect(xmin, ymin, zmin, xmax, ymax, zmax, xmid, ymid, zmid, triangle)) {
+                            unsigned int voxel_x = std::ceil((xmid - origin1.x() - resolution / 2) / resolution);
+                            unsigned int voxel_y = std::ceil((ymid - origin1.y() - resolution / 2) / resolution);
+                            unsigned int voxel_z = std::ceil((zmid - origin1.z() - resolution / 2) / resolution);
+                            if (voxel_grid(voxel_x, voxel_y, voxel_z).marked) {continue;}
+                            else {
+                                voxel_grid(voxel_x, voxel_y, voxel_z).value = face.numeric_id;
+                                voxel_grid(voxel_x, voxel_y, voxel_z).marked = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    voxel_grid.voxel2obj(output_file);
 
     return 0;
 
