@@ -1,0 +1,33 @@
+/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/ninja -G Ninja -S "/Users/apple/Desktop/Q3/GEO1004-3D modelling of the built environment/Assignment/3/3d_hw3" -B "/Users/apple/Desktop/Q3/GEO1004-3D modelling of the built environment/Assignment/3/3d_hw3/cmake-build-debug"
+-- The C compiler identification is AppleClang 14.0.0.14000029
+-- The CXX compiler identification is AppleClang 14.0.0.14000029
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /Library/Developer/CommandLineTools/usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /Library/Developer/CommandLineTools/usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Using header-only CGAL
+-- Targetting Ninja
+-- Using /Library/Developer/CommandLineTools/usr/bin/c++ compiler.
+-- Running in macOS DARWIN_VERSION=22
+-- Found GMP: /opt/homebrew/lib/libgmp.dylib  
+-- Found MPFR: /opt/homebrew/lib/libmpfr.dylib  
+-- Found Boost: /opt/homebrew/lib/cmake/Boost-1.81.0/BoostConfig.cmake (found suitable version "1.81.0", minimum required is "1.66")  
+-- Boost include dirs: /opt/homebrew/include
+-- Boost libraries:    
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Build type: Release
+-- USING CXXFLAGS = '-O2 -O3 -DNDEBUG'
+-- USING EXEFLAGS = ' '
+-- CGAL::CGAL
+-- 
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /Users/apple/Desktop/Q3/GEO1004-3D modelling of the built environment/Assignment/3/3d_hw3/cmake-build-debug
