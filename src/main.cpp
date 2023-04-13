@@ -182,15 +182,17 @@ int main() {
 
     std::cout<<"mark exterior done"<<std::endl;
 
+    int label = -2;
     std::vector<unsigned int> interior;
     for(int i = 0; i<x_num; i++){
         for(int j = 0; j<y_num; j++){
             for(int k = 0; k< z_num; k++){
                 unsigned int idx = voxel_grid.voxel_index(i,j,k);
                 if (voxel_grid(i,j,k)==0){
-                    voxel_grid.mark_room(idx);
+                    voxel_grid.mark_room(idx, label);
+                    label--;
                 }
-                if (voxel_grid(i,j,k)==-2){
+                if (voxel_grid(i,j,k)<=-2){
                     interior.emplace_back(idx);
                 }
             }
@@ -207,12 +209,12 @@ int main() {
 
 
     const std::string buil = "../data/objs/ifc1_bu.obj";
-    const std::string exte = "../data/objs/ifc1_ex.obj";
-    const std::string inte = "../data/objs/ifc1_in.obj";
+    const std::string exte = "../data/objs/ifc3_ex.obj";
+    const std::string inte = "../data/objs/ifc3_in.obj";
 
     voxel_grid.voxel_to_obj(buildings, origin, buil);
-    voxel_grid.voxel_to_obj(exterior, origin, exte);
-    voxel_grid.voxel_to_obj(interior, origin, inte);
+//    voxel_grid.voxel_to_obj(exterior, origin, exte);
+//    voxel_grid.voxel_to_obj(interior, origin, inte);
 
 
 

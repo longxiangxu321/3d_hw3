@@ -153,20 +153,20 @@ struct VoxelGrid {
     }
 
 
-    void mark_room(const unsigned int start) {
+    void mark_room(const unsigned int start, const int label) {
         std::deque<unsigned int> marking;
         marking.push_back(start);
         while (!marking.empty()) {
             unsigned int idx = marking.front();
             if (voxels[idx] == 0){
-                voxels[idx] = -2;
+                voxels[idx] = label;
             }
             std::vector<unsigned int> coordinate = voxel_coordinates(idx);
             std::vector<unsigned int> neighbours = get_neighbour(coordinate[0], coordinate[1], coordinate[2], 0);
             if (!neighbours.empty()) {
                 for (auto const &neighbour: neighbours) {
                     if (neighbour < voxels.size()) { // check if neighbour is within bounds
-                        voxels[neighbour] = -2;
+                        voxels[neighbour] = label;
                         marking.push_back(neighbour);
                     } else {
                         continue;

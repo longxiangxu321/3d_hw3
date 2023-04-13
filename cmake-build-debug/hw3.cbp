@@ -97,6 +97,9 @@
 		<Unit filename="/mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/3d_hw3-bs0412/src/main.cpp">
 			<Option target="hw3"/>
 		</Unit>
+		<Unit filename="/mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/3d_hw3-bs0412/src/marchingcube.h">
+			<Option target="hw3"/>
+		</Unit>
 		<Unit filename="/mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/3d_hw3-bs0412/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
