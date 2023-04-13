@@ -5,10 +5,6 @@
 #ifndef HW3_VOXELGRID_H
 #define HW3_VOXELGRID_H
 #include "definitions.h"
-#include <iostream>
-#include <algorithm>
-#include <vector>
-#include <list>
 
 struct VoxelGrid {
 
@@ -77,7 +73,7 @@ struct VoxelGrid {
 
 
     std::vector<unsigned int> get_neighbour(const unsigned int &x, const unsigned int &y, const unsigned int &z
-    , const int& v) const{
+            , const int& v) const{
         std::vector<unsigned int> neighbours;
         assert(x >= 0 && x < max_x);
         assert(y >= 0 && y < max_y);
@@ -160,33 +156,18 @@ struct VoxelGrid {
     void mark_room(const unsigned int start) {
         std::deque<unsigned int> marking;
         marking.push_back(start);
-        int index_to_pop;
-        std::vector<unsigned int>copy_interior;
-        copy(in_voxels.begin(), in_voxels.end(), back_inserter(copy_interior));
         while (!marking.empty()) {
             unsigned int idx = marking.front();
             if (voxels[idx] == 0){
                 voxels[idx] = -2;
-                std::vector<unsigned int>::iterator itr = std::find(copy_interior.begin(), copy_interior.end(), idx);
-
-                if (itr != copy_interior.cend()) {
-                    copy_interior.erase(itr);
-                }
-                else {
-                    std::cout << "Element not found";
-                }
             }
             std::vector<unsigned int> coordinate = voxel_coordinates(idx);
             std::vector<unsigned int> neighbours = get_neighbour(coordinate[0], coordinate[1], coordinate[2], 0);
             if (!neighbours.empty()) {
                 for (auto const &neighbour: neighbours) {
-                    if (neighbour < voxels.size()&&std::find(marking.begin(), marking.end(), neighbour) != marking.end()
-                    && std::find(copy_interior.begin(), copy_interior.end(), idx)!= copy_interior.end()) { // check if neighbour is within bounds
-                        //and if already exits
+                    if (neighbour < voxels.size()) { // check if neighbour is within bounds
                         voxels[neighbour] = -2;
                         marking.push_back(neighbour);
-                        std::vector<unsigned int>::iterator itr = std::find(copy_interior.begin(), copy_interior.end(), idx);
-                        copy_interior.erase(itr);
                     } else {
                         continue;
                     }
