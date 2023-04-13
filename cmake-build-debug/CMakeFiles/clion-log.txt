@@ -1,0 +1,37 @@
+C:\Windows\system32\wsl.exe --distribution Ubuntu --exec /bin/bash -c "export CMAKE_COLOR_DIAGNOSTICS=ON && export CLION_IDE=TRUE && export JETBRAINS_IDE=TRUE && cd /mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/3d_hw3-bs0412/cmake-build-debug && /usr/local/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G 'CodeBlocks - Unix Makefiles' -S /mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/3d_hw3-bs0412 -B /mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/3d_hw3-bs0412/cmake-build-debug"
+-- The C compiler identification is GNU 9.4.0
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Using header-only CGAL
+-- Targetting Unix Makefiles
+-- Using /usr/bin/c++ compiler.
+-- Found GMP: /usr/lib/x86_64-linux-gnu/libgmp.so  
+-- Found MPFR: /usr/lib/x86_64-linux-gnu/libmpfr.so  
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.71.0/BoostConfig.cmake (found suitable version "1.71.0", minimum required is "1.66")  
+-- Boost include dirs: /usr/include
+-- Boost libraries:    
+-- Looking for pthread.h
+-- Looking for pthread.h - found
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+-- Check if compiler accepts -pthread
+-- Check if compiler accepts -pthread - yes
+-- Found Threads: TRUE  
+-- Using gcc version 4 or later. Adding -frounding-math
+-- Build type: Release
+-- USING CXXFLAGS = '-O2 -O3 -DNDEBUG'
+-- USING EXEFLAGS = ' '
+-- CGAL::CGAL
+-- 
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/3d_hw3-bs0412/cmake-build-debug
