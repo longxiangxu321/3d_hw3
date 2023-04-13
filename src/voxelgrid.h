@@ -150,18 +150,18 @@ struct VoxelGrid {
         if((*this)(x,y,z + 1) == -1 ) nlist.emplace_back(std::make_pair(Point3(cp.x(), cp.y(), cp.z()+resolution/2), Vector3(0,0,+1)));
     }
 
-    void get_room_surface_points (const unsigned int &idx, std::vector<Point_with_normal> &nlist, const int &label) {
+    void get_room_surface_points (const unsigned int &idx, std::vector<Point_with_normal> &nlist) {
         std::vector<unsigned int> coords = voxel_coordinates(idx);
         unsigned int x = coords[0];
         unsigned int y = coords[1];
         unsigned int z = coords[2];
         Point3 cp = center(x,y,z);
-        if((*this)(x - 1,y,z) < -1) nlist.emplace_back(std::make_pair(Point3(cp.x()-resolution/2, cp.y(), cp.z()), Vector3(-1,0,0)));
-        if((*this)(x + 1,y,z) < -1) nlist.emplace_back(std::make_pair(Point3(cp.x()+resolution/2, cp.y(), cp.z()), Vector3(1,0,0)));
-        if((*this)(x,y - 1,z) < -1) nlist.emplace_back(std::make_pair(Point3(cp.x(), cp.y()-resolution/2, cp.z()), Vector3(0,-1,0)));
-        if((*this)(x,y + 1,z) < -1) nlist.emplace_back(std::make_pair(Point3(cp.x(), cp.y()+resolution/2, cp.z()), Vector3(0,+1,0)));
-        if((*this)(x,y,z - 1) < -1) nlist.emplace_back(std::make_pair(Point3(cp.x(), cp.y(), cp.z()-resolution/2), Vector3(0,0,-1)));
-        if((*this)(x,y,z + 1) < -1) nlist.emplace_back(std::make_pair(Point3(cp.x(), cp.y(), cp.z()+resolution/2), Vector3(0,0,+1)));
+        if((*this)(x - 1,y,z) > 0) nlist.emplace_back(std::make_pair(Point3(cp.x()-resolution/2, cp.y(), cp.z()), Vector3(-1,0,0)));
+        if((*this)(x + 1,y,z) > 0) nlist.emplace_back(std::make_pair(Point3(cp.x()+resolution/2, cp.y(), cp.z()), Vector3(1,0,0)));
+        if((*this)(x,y - 1,z) > 0) nlist.emplace_back(std::make_pair(Point3(cp.x(), cp.y()-resolution/2, cp.z()), Vector3(0,-1,0)));
+        if((*this)(x,y + 1,z) > 0) nlist.emplace_back(std::make_pair(Point3(cp.x(), cp.y()+resolution/2, cp.z()), Vector3(0,+1,0)));
+        if((*this)(x,y,z - 1) > 0) nlist.emplace_back(std::make_pair(Point3(cp.x(), cp.y(), cp.z()-resolution/2), Vector3(0,0,-1)));
+        if((*this)(x,y,z + 1) > 0) nlist.emplace_back(std::make_pair(Point3(cp.x(), cp.y(), cp.z()+resolution/2), Vector3(0,0,+1)));
     }
 
 

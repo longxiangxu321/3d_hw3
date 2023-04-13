@@ -181,9 +181,9 @@ int main() {
 //        std::cout << "room has " << room.size() <<std::endl;
 //    }
 
-    const std::string buil = "../data/objs/ifc1_bu.obj";
-    const std::string exte = "../data/objs/ifc3_ex.obj";
-    const std::string inte = "../data/objs/ifc3_in.obj";
+    const std::string buil = "../data/voxels/ifc1_bu.obj";
+    const std::string exte = "../data/voxels/ifc3_ex.obj";
+    const std::string inte = "../data/voxels/ifc3_in.obj";
 
     std::vector<Point_with_normal> building_surface_points;
     for (auto const bu: voxel_grid.buildings)
@@ -192,75 +192,43 @@ int main() {
         }
     std::cout << "building surface number " << building_surface_points.size() << std::endl;
 
-    std::string building1 = "../data/objs/output.xyz";
-    std::ofstream outfile(building1);
+    std::string building_point_file = "../data/reconstructed/pointcloud/building.xyz";
+    std::ofstream outfile(building_point_file);
     for (const auto& point : building_surface_points) {
         outfile << point.first.x() << " " << point.first.y() << " " << point.first.z() << " " << point.second.x() << " " << point.second.y() << " " << point.second.z() << "\n";
     }
     outfile.close();
 
-    int result = reconstruction(building1);
-//    std::cout<<result<<std::endl;
+    Polyhedron building_result;
+    std::string building_mesh_file = "../data/reconstructed/mesh/building.off";
+    reconstruction(building_point_file, building_mesh_file, building_result);
 
-
-//    std::vector<Point_with_normal> points1;
-//    FT sm_angle = 20.0; // Min triangle angle in degrees.
-//    FT sm_radius = 30; // Max triangle size w.r.t. point set average spacing.
-//    FT sm_distance = 0.375; // Surface Approximation error w.r.t. point set average spacing.
-//
-//    if(!CGAL::IO::read_points(CGAL::data_file_path("../data/objs/output.xyz"), std::back_inserter(points1),
-//                              CGAL::parameters::point_map(Point_map())
-//                                      .normal_map (Normal_map())))
-//    {
-//        std::cerr << "Error: cannot read file input file!" << std::endl;
-//        return EXIT_FAILURE;
+//    for (auto const &room:voxel_grid.in_voxels) {
+//            std::cout<<room.size()<<std::endl;
 //    }
-//    // Creates implicit function from the read points using the default solver.
-//    // Note: this method requires an iterator over points
-//    // + property maps to access each point's position and normal.
-//    Poisson_reconstruction_function function(points1.begin(), points1.end(), Point_map(), Normal_map());
-//    // Computes the Poisson indicator function f()
-//    // at each vertex of the triangulation.
-//    if ( ! function.compute_implicit_function() )
-//        return EXIT_FAILURE;
-//    // Computes average spacing
-//    FT average_spacing = CGAL::compute_average_spacing<CGAL::Sequential_tag>
-//            (points1, 6 /* knn = 1 ring */,
-//             CGAL::parameters::point_map (Point_map()));
-//    // Gets one point inside the implicit surface
-//    // and computes implicit function bounding sphere radius.
-//    Point3 inner_point = function.get_inner_point();
-//    Sphere bsphere = function.bounding_sphere();
-//    FT radius = std::sqrt(bsphere.squared_radius());
-//    // Defines the implicit surface: requires defining a
-//    // conservative bounding sphere centered at inner point.
-//    FT sm_sphere_radius = 5.0 * radius;
-//    FT sm_dichotomy_error = sm_distance*average_spacing/1000.0; // Dichotomy error must be << sm_distance
-//    Surface_3 surface(function,
-//                      Sphere(inner_point,sm_sphere_radius*sm_sphere_radius),
-//                      sm_dichotomy_error/sm_sphere_radius);
-//    // Defines surface mesh generation criteria
-//    CGAL::Surface_mesh_default_criteria_3<STr> criteria(sm_angle,  // Min triangle angle (degrees)
-//                                                        sm_radius*average_spacing,  // Max triangle size
-//                                                        sm_distance*average_spacing); // Approximation error
-//    // Generates surface mesh with manifold option
-//    STr tr; // 3D Delaunay triangulation for surface mesh generation
-//    C2t3 c2t3(tr); // 2D complex in 3D Delaunay triangulation
-//    CGAL::make_surface_mesh(c2t3,                                 // reconstructed mesh
-//                            surface,                              // implicit surface
-//                            criteria,                             // meshing criteria
-//                            CGAL::Manifold_with_boundary_tag());  // require manifold mesh
-//    if(tr.number_of_vertices() == 0)
-//        return EXIT_FAILURE;
-//    // saves reconstructed surface mesh
-//    std::ofstream out("../data/objs/output.off");
-//    Polyhedron output_mesh;
-//    CGAL::facets_in_complex_2_to_triangle_mesh(c2t3, output_mesh);
-//    out << output_mesh;
+    std::vector<Polyhedron> rooms_meshes;
 
-//    voxel_grid.voxel_to_obj(exterior, origin, exte);
-//    voxel_grid.voxel_to_obj(interior, origin, inte);
-
+    int room_id = 1;
+    for (auto const &room:voxel_grid.in_voxels) {
+        std::vector<Point_with_normal> room_points;
+        if (room.size() >= 5000) {    // filter out small rooms;
+            std::string room_point_file = "../data/reconstructed/pointcloud/room-" + std::to_string(room_id) + ".xyz";
+            for (auto const &rp: room) {
+                voxel_grid.get_room_surface_points(rp, room_points);
+            }
+            std::ofstream outf(room_point_file);
+            for (auto const &point:room_points) {
+                outf << point.first.x() << " " << point.first.y() << " " << point.first.z() << " " << point.second.x() << " " << point.second.y() << " " << point.second.z() << "\n";
+            }
+            outf.close();
+            Polyhedron room_result;
+            std::string room_mesh_file = "../data/reconstructed/mesh/room-" + std::to_string(room_id) + ".off";
+            reconstruction(room_point_file, room_mesh_file, room_result);
+            rooms_meshes.emplace_back(room_result);
+            room_id++;
+        }
+    }
+    std::cout<<"room meshes " << rooms_meshes.size()<<std::endl;
 
     return 0;
 }

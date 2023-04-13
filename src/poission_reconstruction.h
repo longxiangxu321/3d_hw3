@@ -7,13 +7,13 @@
 #include "definitions.h"
 #include <iostream>
 
-int reconstruction(const std::string &point_file) {
+int reconstruction(const std::string &point_file, const std::string &mesh_file, Polyhedron &out_mesh) {
     std::vector<Point_with_normal> points1;
     FT sm_angle = 20.0; // Min triangle angle in degrees.
     FT sm_radius = 30; // Max triangle size w.r.t. point set average spacing.
     FT sm_distance = 0.375; // Surface Approximation error w.r.t. point set average spacing.
 
-    if(!CGAL::IO::read_points(CGAL::data_file_path("../data/objs/output.xyz"), std::back_inserter(points1),
+    if(!CGAL::IO::read_points(CGAL::data_file_path(point_file), std::back_inserter(points1),
                               CGAL::parameters::point_map(Point_map())
                                       .normal_map (Normal_map())))
     {
@@ -58,10 +58,11 @@ int reconstruction(const std::string &point_file) {
     if(tr.number_of_vertices() == 0)
         return EXIT_FAILURE;
     // saves reconstructed surface mesh
-    std::ofstream out("../data/objs/output.off");
+    std::ofstream out(mesh_file);
     Polyhedron output_mesh;
     CGAL::facets_in_complex_2_to_triangle_mesh(c2t3, output_mesh);
     out << output_mesh;
+    out_mesh = output_mesh;
     return 0;
 }
 
