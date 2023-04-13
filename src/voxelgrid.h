@@ -10,21 +10,22 @@ struct VoxelGrid {
 
     std::vector<int> voxels;
     std::vector<unsigned int> ex_voxels;
-    std::vector<unsigned int> in_voxels;
+    std::vector<std::vector<unsigned int>> in_voxels;
     std::vector<unsigned int> buildings;
     unsigned int max_x, max_y, max_z;
 
     float resolution;
+    Point3 origin;
 
 
-    VoxelGrid(unsigned int x, unsigned int y, unsigned int z, const float &reso) {
+    VoxelGrid(unsigned int x, unsigned int y, unsigned int z, const float &reso, const Point3 &origin1) {
         max_x = x;
         max_y = y;
         max_z = z;
         resolution = reso;
         unsigned int total_voxels = x*y*z;
         voxels.reserve(total_voxels);
-
+        origin = origin1;
         for (unsigned int i = 0; i < total_voxels; ++i) voxels.push_back(0);
     }
 
@@ -43,7 +44,7 @@ struct VoxelGrid {
         return voxels[x + y*max_x + z*max_x*max_y];
     }
 
-    Point3 center(const unsigned int &x, const unsigned int &y, const unsigned int &z, const Point3& origin) const {
+    Point3 center(const unsigned int &x, const unsigned int &y, const unsigned int &z) const {
         double xc = (x+0.5) * resolution + origin.x();
         double yc = (y+0.5) * resolution + origin.y();
         double zc = (z+0.5) * resolution + origin.z();
@@ -69,6 +70,36 @@ struct VoxelGrid {
         assert(y >= 0 && y < max_y);
         assert(z >= 0 && z < max_z);
         return {x, y, z};
+    }
+
+    void mark_voxels_intersecting_triangle(const Triangle_3 &triangle, const int &label) {
+        // Get the bounding box of the triangle
+        Bbox_3 triangle_bbox = triangle.bbox();
+
+        // Compute the minimum and maximum voxel coordinates that intersect the bounding box
+        unsigned int min_x = static_cast<unsigned int>((triangle_bbox.xmin() - origin.x()) / resolution);
+        unsigned int max_x = static_cast<unsigned int>((triangle_bbox.xmax() - origin.x()) / resolution);
+        unsigned int min_y = static_cast<unsigned int>((triangle_bbox.ymin() - origin.y()) / resolution);
+        unsigned int max_y = static_cast<unsigned int>((triangle_bbox.ymax() - origin.y()) / resolution);
+        unsigned int min_z = static_cast<unsigned int>((triangle_bbox.zmin() - origin.z()) / resolution);
+        unsigned int max_z = static_cast<unsigned int>((triangle_bbox.zmax() - origin.z()) / resolution);
+
+        // Iterate over all voxels within the computed range
+        for (unsigned int z = min_z; z <= max_z; ++z) {
+            for (unsigned int y = min_y; y <= max_y; ++y) {
+                for (unsigned int x = min_x; x <= max_x; ++x) {
+                    Point3 center_p = center(x,y,z);
+                    int value = (*this)(x,y,z);
+                    if (value!=0) continue;
+                    else {
+                        if (intersect(center_p.x()-resolution/2, center_p.y()-resolution/2, center_p.z()-resolution/2,
+                                      center_p.x()+resolution/2, center_p.y()+resolution/2, center_p.z()+resolution/2,
+                                      center_p.x(), center_p.y(), center_p.z(), triangle))
+                            (*this)(x,y,z) = label;
+                    }
+                }
+            }
+        }
     }
 
 
@@ -103,6 +134,34 @@ struct VoxelGrid {
             if (voxels[i6]==v) neighbours.push_back(i6);
         }
         return neighbours;
+    }
+
+    void get_buildding_surface_points (const unsigned int &idx, std::vector<Point_with_normal> &nlist) {
+        std::vector<unsigned int> coords = voxel_coordinates(idx);
+        unsigned int x = coords[0];
+        unsigned int y = coords[1];
+        unsigned int z = coords[2];
+        Point3 cp = center(x,y,z);
+        if((*this)(x - 1,y,z) == -1 ) nlist.emplace_back(std::make_pair(Point3(cp.x()-resolution/2, cp.y(), cp.z()), Vector3(-1,0,0)));
+        if((*this)(x + 1,y,z) == -1 ) nlist.emplace_back(std::make_pair(Point3(cp.x()+resolution/2, cp.y(), cp.z()), Vector3(1,0,0)));
+        if((*this)(x,y - 1,z) == -1 ) nlist.emplace_back(std::make_pair(Point3(cp.x(), cp.y()-resolution/2, cp.z()), Vector3(0,-1,0)));
+        if((*this)(x,y + 1,z) == -1 ) nlist.emplace_back(std::make_pair(Point3(cp.x(), cp.y()+resolution/2, cp.z()), Vector3(0,+1,0)));
+        if((*this)(x,y,z - 1) == -1 ) nlist.emplace_back(std::make_pair(Point3(cp.x(), cp.y(), cp.z()-resolution/2), Vector3(0,0,-1)));
+        if((*this)(x,y,z + 1) == -1 ) nlist.emplace_back(std::make_pair(Point3(cp.x(), cp.y(), cp.z()+resolution/2), Vector3(0,0,+1)));
+    }
+
+    void get_room_surface_points (const unsigned int &idx, std::vector<Point_with_normal> &nlist, const int &label) {
+        std::vector<unsigned int> coords = voxel_coordinates(idx);
+        unsigned int x = coords[0];
+        unsigned int y = coords[1];
+        unsigned int z = coords[2];
+        Point3 cp = center(x,y,z);
+        if((*this)(x - 1,y,z) < -1) nlist.emplace_back(std::make_pair(Point3(cp.x()-resolution/2, cp.y(), cp.z()), Vector3(-1,0,0)));
+        if((*this)(x + 1,y,z) < -1) nlist.emplace_back(std::make_pair(Point3(cp.x()+resolution/2, cp.y(), cp.z()), Vector3(1,0,0)));
+        if((*this)(x,y - 1,z) < -1) nlist.emplace_back(std::make_pair(Point3(cp.x(), cp.y()-resolution/2, cp.z()), Vector3(0,-1,0)));
+        if((*this)(x,y + 1,z) < -1) nlist.emplace_back(std::make_pair(Point3(cp.x(), cp.y()+resolution/2, cp.z()), Vector3(0,+1,0)));
+        if((*this)(x,y,z - 1) < -1) nlist.emplace_back(std::make_pair(Point3(cp.x(), cp.y(), cp.z()-resolution/2), Vector3(0,0,-1)));
+        if((*this)(x,y,z + 1) < -1) nlist.emplace_back(std::make_pair(Point3(cp.x(), cp.y(), cp.z()+resolution/2), Vector3(0,0,+1)));
     }
 
 
@@ -140,11 +199,11 @@ struct VoxelGrid {
                                 ex_voxels.emplace_back(voxel_index(i, j, k));
                             }
                             else{
-                                in_voxels.emplace_back(voxel_index(i, j, k));// this is interior, the value will be changed in mark_room
+                                    continue;
                             }
                         }
                         else{
-                            buildings.emplace_back(voxel_index(i, j, k)); // face_id
+                            buildings.emplace_back(voxel_index(i, j, k));
                         }
                     }
                 }
@@ -154,12 +213,14 @@ struct VoxelGrid {
 
 
     void mark_room(const unsigned int start, const int label) {
+        std::vector<unsigned int> marked;
         std::deque<unsigned int> marking;
         marking.push_back(start);
         while (!marking.empty()) {
             unsigned int idx = marking.front();
             if (voxels[idx] == 0){
                 voxels[idx] = label;
+                marked.emplace_back(idx);
             }
             std::vector<unsigned int> coordinate = voxel_coordinates(idx);
             std::vector<unsigned int> neighbours = get_neighbour(coordinate[0], coordinate[1], coordinate[2], 0);
@@ -168,6 +229,7 @@ struct VoxelGrid {
                     if (neighbour < voxels.size()) { // check if neighbour is within bounds
                         voxels[neighbour] = label;
                         marking.push_back(neighbour);
+                        marked.emplace_back(neighbour);
                     } else {
                         continue;
                     }
@@ -175,39 +237,14 @@ struct VoxelGrid {
             }
             marking.pop_front();
         }
+        in_voxels.emplace_back(marked);
     }
 
 
 
-//    void mark_room(const unsigned int start) {
-//        std::list<unsigned int> marking;
-//        marking.push_back(start);
-//        while (!marking.empty()) {
-//            unsigned int idx = marking.front();
-//            if (voxels[idx] ==0){
-//                voxels[idx] = -2;
-//            }
-//            std::vector<unsigned int> coordinate = voxel_coordinates(idx);
-//            std::vector<unsigned int> neighbours = get_neighbour(coordinate[0], coordinate[1], coordinate[2], 0);
-//            if (!neighbours.empty()) {
-//                for (auto const &neighbour: neighbours) {
-//                    if (neighbour < voxels.size()) { // check if neighbour is within bounds
-//                        voxels[neighbour] = -2;
-//                    std::cout << neighbour << std::endl;
-//                        marking.push_back(neighbour);
-//                    } else {
-//                        continue;
-//                    }
-//                }
-//            }
-//            marking.pop_front();
-//        }
-//    }
 
 
-
-    void voxel_to_obj(std::vector<unsigned int>& voxel_coords, const Point3& origin,
-                      const std::string& filename) {
+    void voxel_to_obj(std::vector<unsigned int>& voxel_coords, const std::string& filename) {
 
         std::ofstream out(filename);
         if (!out.is_open()) {
@@ -228,7 +265,7 @@ struct VoxelGrid {
             int i = 0;
             for (auto it = voxel_coords.begin(); it != voxel_coords.end(); ++it) {
                 Point3 vc = center(voxel_coordinates(*it)[0], voxel_coordinates(*it)[1],
-                                   voxel_coordinates(*it)[2], origin);
+                                   voxel_coordinates(*it)[2]);
                 if (i==static_cast<int>(g1)) std::cout<<"10%"<<std::endl;
                 if (i==static_cast<int>(g2)) std::cout<<"20%"<<std::endl;
                 if (i==static_cast<int>(g3)) std::cout<<"30%"<<std::endl;

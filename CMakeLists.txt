@@ -7,7 +7,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/include/ )
 find_package(CGAL PATHS "C:/Program Files (x86)/CGAL")
 
 FILE(GLOB SRC_FILES src/*.cpp)
-add_executable(hw3 ${SRC_FILES} src/marchingcube.h)
+add_executable(hw3 ${SRC_FILES} src/poission_reconstruction.h)
 target_link_libraries(${PROJECT_NAME} CGAL::CGAL CGAL::Eigen3_support)
 
 set(CMAKE_CXX_COMPILER g++)

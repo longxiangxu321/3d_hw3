@@ -1,39 +1,8 @@
 #include "geometry.h"
 #include "voxelgrid.h"
 #include <iostream>
-#include <sstream>
-//const std::string input_file = "../data/objs/Ifc2x3_weld.obj";
-//const std::string input_file = "../data/objs/AC90R1ifc.obj";
+#include "poission_reconstruction.h"
 
-void mark_voxels_intersecting_triangle(const Triangle_3 &triangle, VoxelGrid &voxel_grid, const Point3 &origin, const int &label) {
-    // Get the bounding box of the triangle
-    Bbox_3 triangle_bbox = triangle.bbox();
-
-    // Compute the minimum and maximum voxel coordinates that intersect the bounding box
-    unsigned int min_x = static_cast<unsigned int>((triangle_bbox.xmin() - origin.x()) / voxel_grid.resolution);
-    unsigned int max_x = static_cast<unsigned int>((triangle_bbox.xmax() - origin.x()) / voxel_grid.resolution);
-    unsigned int min_y = static_cast<unsigned int>((triangle_bbox.ymin() - origin.y()) / voxel_grid.resolution);
-    unsigned int max_y = static_cast<unsigned int>((triangle_bbox.ymax() - origin.y()) / voxel_grid.resolution);
-    unsigned int min_z = static_cast<unsigned int>((triangle_bbox.zmin() - origin.z()) / voxel_grid.resolution);
-    unsigned int max_z = static_cast<unsigned int>((triangle_bbox.zmax() - origin.z()) / voxel_grid.resolution);
-
-    // Iterate over all voxels within the computed range
-    for (unsigned int z = min_z; z <= max_z; ++z) {
-        for (unsigned int y = min_y; y <= max_y; ++y) {
-            for (unsigned int x = min_x; x <= max_x; ++x) {
-                Point3 center = voxel_grid.center(x,y,z, origin);
-                int value = voxel_grid(x,y,z);
-                if (value!=0) continue;
-                else {
-                    if (intersect(center.x()-voxel_grid.resolution/2, center.y()-voxel_grid.resolution/2, center.z()-voxel_grid.resolution/2,
-                               center.x()+voxel_grid.resolution/2, center.y()+voxel_grid.resolution/2, center.z()+voxel_grid.resolution/2,
-                               center.x(), center.y(), center.z(), triangle))
-                    voxel_grid(x,y,z) = label;
-                }
-            }
-        }
-    }
-}
 
 
 
@@ -131,14 +100,15 @@ int main() {
     auto x_num = static_cast<unsigned int>(std::ceil((max_x - min_x) / resolution)) + 2; // + 1 tp ensure voxel grid larger than building bbox
     auto y_num = static_cast<unsigned int>(std::ceil((max_y - min_y) / resolution)) + 2;
     auto z_num = static_cast<unsigned int>(std::ceil((max_z - min_z) / resolution)) + 2;
-    VoxelGrid voxel_grid(x_num, y_num, z_num, resolution);
+    Point3 origin(min_x - resolution, min_y - resolution, min_z - resolution);
+    VoxelGrid voxel_grid(x_num, y_num, z_num, resolution, origin);
 
     std::cout<<"Voxel_grid_x_num: "<<x_num<<std::endl;
     std::cout<<"Voxel_grid_y_num: "<<y_num<<std::endl;
     std::cout<<"Voxel_grid_z_num: "<<z_num<<std::endl;
     std::cout<<"Voxel_grid_resolution: "<<voxel_grid.resolution<<std::endl;
     point_vector pts;
-    Point3 origin(min_x - resolution, min_y - resolution, min_z - resolution);
+
 
 
     for (auto const &object: objects) {
@@ -148,7 +118,7 @@ int main() {
                 Point3 v1 = points[face.vertices[1] - 1];
                 Point3 v2 = points[face.vertices[2] - 1];
                 Triangle_3 triangle(v0, v1, v2);
-                mark_voxels_intersecting_triangle(triangle, voxel_grid, origin, face.numeric_id);
+                voxel_grid.mark_voxels_intersecting_triangle(triangle, face.numeric_id);
                     }
                 }
             }
@@ -161,7 +131,7 @@ int main() {
     for(int i = 0; i<x_num; i++){
         for(int j = 0; j<y_num; j++){
             for(int k = 0; k< z_num; k++){
-                if (voxel_grid(i,j,k)!=0){
+                if (voxel_grid(i,j,k)>0){
                     buildings.emplace_back(voxel_grid.voxel_index(i,j,k));
                 }
             }
@@ -204,18 +174,92 @@ int main() {
 
     std::cout<<"exterior "<< voxel_grid.ex_voxels.size() << " " << exterior.size()<<std::endl;
     std::cout<<"interior "<< voxel_grid.in_voxels.size() << " " << interior.size()<<std::endl;
-    std::cout<<"building "<< buildings.size() << std::endl;
+    std::cout<<"building "<< voxel_grid.buildings.size() << " " << buildings.size() << std::endl;
     std::cout<< "total " << voxel_grid.voxels.size() << " " << exterior.size() + interior.size() + buildings.size() <<std::endl;
 
+//    for (auto const &room:voxel_grid.in_voxels){
+//        std::cout << "room has " << room.size() <<std::endl;
+//    }
 
     const std::string buil = "../data/objs/ifc1_bu.obj";
     const std::string exte = "../data/objs/ifc3_ex.obj";
     const std::string inte = "../data/objs/ifc3_in.obj";
 
-    voxel_grid.voxel_to_obj(buildings, origin, buil);
+    std::vector<Point_with_normal> building_surface_points;
+    for (auto const bu: voxel_grid.buildings)
+        {
+            voxel_grid.get_buildding_surface_points(bu, building_surface_points);
+        }
+    std::cout << "building surface number " << building_surface_points.size() << std::endl;
+
+    std::string building1 = "../data/objs/output.xyz";
+    std::ofstream outfile(building1);
+    for (const auto& point : building_surface_points) {
+        outfile << point.first.x() << " " << point.first.y() << " " << point.first.z() << " " << point.second.x() << " " << point.second.y() << " " << point.second.z() << "\n";
+    }
+    outfile.close();
+
+    int result = reconstruction(building1);
+//    std::cout<<result<<std::endl;
+
+
+//    std::vector<Point_with_normal> points1;
+//    FT sm_angle = 20.0; // Min triangle angle in degrees.
+//    FT sm_radius = 30; // Max triangle size w.r.t. point set average spacing.
+//    FT sm_distance = 0.375; // Surface Approximation error w.r.t. point set average spacing.
+//
+//    if(!CGAL::IO::read_points(CGAL::data_file_path("../data/objs/output.xyz"), std::back_inserter(points1),
+//                              CGAL::parameters::point_map(Point_map())
+//                                      .normal_map (Normal_map())))
+//    {
+//        std::cerr << "Error: cannot read file input file!" << std::endl;
+//        return EXIT_FAILURE;
+//    }
+//    // Creates implicit function from the read points using the default solver.
+//    // Note: this method requires an iterator over points
+//    // + property maps to access each point's position and normal.
+//    Poisson_reconstruction_function function(points1.begin(), points1.end(), Point_map(), Normal_map());
+//    // Computes the Poisson indicator function f()
+//    // at each vertex of the triangulation.
+//    if ( ! function.compute_implicit_function() )
+//        return EXIT_FAILURE;
+//    // Computes average spacing
+//    FT average_spacing = CGAL::compute_average_spacing<CGAL::Sequential_tag>
+//            (points1, 6 /* knn = 1 ring */,
+//             CGAL::parameters::point_map (Point_map()));
+//    // Gets one point inside the implicit surface
+//    // and computes implicit function bounding sphere radius.
+//    Point3 inner_point = function.get_inner_point();
+//    Sphere bsphere = function.bounding_sphere();
+//    FT radius = std::sqrt(bsphere.squared_radius());
+//    // Defines the implicit surface: requires defining a
+//    // conservative bounding sphere centered at inner point.
+//    FT sm_sphere_radius = 5.0 * radius;
+//    FT sm_dichotomy_error = sm_distance*average_spacing/1000.0; // Dichotomy error must be << sm_distance
+//    Surface_3 surface(function,
+//                      Sphere(inner_point,sm_sphere_radius*sm_sphere_radius),
+//                      sm_dichotomy_error/sm_sphere_radius);
+//    // Defines surface mesh generation criteria
+//    CGAL::Surface_mesh_default_criteria_3<STr> criteria(sm_angle,  // Min triangle angle (degrees)
+//                                                        sm_radius*average_spacing,  // Max triangle size
+//                                                        sm_distance*average_spacing); // Approximation error
+//    // Generates surface mesh with manifold option
+//    STr tr; // 3D Delaunay triangulation for surface mesh generation
+//    C2t3 c2t3(tr); // 2D complex in 3D Delaunay triangulation
+//    CGAL::make_surface_mesh(c2t3,                                 // reconstructed mesh
+//                            surface,                              // implicit surface
+//                            criteria,                             // meshing criteria
+//                            CGAL::Manifold_with_boundary_tag());  // require manifold mesh
+//    if(tr.number_of_vertices() == 0)
+//        return EXIT_FAILURE;
+//    // saves reconstructed surface mesh
+//    std::ofstream out("../data/objs/output.off");
+//    Polyhedron output_mesh;
+//    CGAL::facets_in_complex_2_to_triangle_mesh(c2t3, output_mesh);
+//    out << output_mesh;
+
 //    voxel_grid.voxel_to_obj(exterior, origin, exte);
 //    voxel_grid.voxel_to_obj(interior, origin, inte);
-
 
 
     return 0;

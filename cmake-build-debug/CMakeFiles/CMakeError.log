@@ -1,22 +1,22 @@
 Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
 Change Dir: /mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/3d_hw3-bs0412/cmake-build-debug/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/make -f Makefile cmTC_44f27/fast && /usr/bin/make  -f CMakeFiles/cmTC_44f27.dir/build.make CMakeFiles/cmTC_44f27.dir/build
+Run Build Command(s):/usr/bin/make -f Makefile cmTC_31a48/fast && /usr/bin/make  -f CMakeFiles/cmTC_31a48.dir/build.make CMakeFiles/cmTC_31a48.dir/build
 make[1]: Entering directory '/mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/3d_hw3-bs0412/cmake-build-debug/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_44f27.dir/src.c.o
-/usr/bin/cc -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_44f27.dir/src.c.o -c /mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/3d_hw3-bs0412/cmake-build-debug/CMakeFiles/CMakeTmp/src.c
-Linking C executable cmTC_44f27
-/usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_44f27.dir/link.txt --verbose=1
-/usr/bin/cc CMakeFiles/cmTC_44f27.dir/src.c.o -o cmTC_44f27 
-/usr/bin/ld: CMakeFiles/cmTC_44f27.dir/src.c.o: in function `main':
+Building C object CMakeFiles/cmTC_31a48.dir/src.c.o
+/usr/bin/cc -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_31a48.dir/src.c.o -c /mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/3d_hw3-bs0412/cmake-build-debug/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_31a48
+/usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_31a48.dir/link.txt --verbose=1
+/usr/bin/cc CMakeFiles/cmTC_31a48.dir/src.c.o -o cmTC_31a48 
+/usr/bin/ld: CMakeFiles/cmTC_31a48.dir/src.c.o: in function `main':
 src.c:(.text+0x46): undefined reference to `pthread_create'
 /usr/bin/ld: src.c:(.text+0x52): undefined reference to `pthread_detach'
 /usr/bin/ld: src.c:(.text+0x5e): undefined reference to `pthread_cancel'
 /usr/bin/ld: src.c:(.text+0x6f): undefined reference to `pthread_join'
 collect2: error: ld returned 1 exit status
-make[1]: *** [CMakeFiles/cmTC_44f27.dir/build.make:99: cmTC_44f27] Error 1
+make[1]: *** [CMakeFiles/cmTC_31a48.dir/build.make:99: cmTC_31a48] Error 1
 make[1]: Leaving directory '/mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/3d_hw3-bs0412/cmake-build-debug/CMakeFiles/CMakeTmp'
-make: *** [Makefile:127: cmTC_44f27/fast] Error 2
+make: *** [Makefile:127: cmTC_31a48/fast] Error 2
 
 
 Source file was:
