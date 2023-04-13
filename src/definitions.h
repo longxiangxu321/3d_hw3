@@ -20,7 +20,7 @@
 #include <CGAL/Triangulation_vertex_base_with_id_2.h>
 #include <CGAL/Triangulation_face_base_with_info_2.h>
 #include <CGAL/squared_distance_3.h>
-
+#include "json.hpp"
 //#include <CGAL/Orthtree.h>
 #include <CGAL/Bbox_3.h>
 #include <CGAL/iterator.h>
@@ -64,6 +64,7 @@ typedef std::vector<Bbox_3> boxes;
 
 typedef CGAL::Octree<K, point_vector> Octree;
 typedef std::vector<Octree::Node> output_nodes;
+typedef nlohmann::json json;
 
 
 #endif //HW3_DEFINITIONS_H

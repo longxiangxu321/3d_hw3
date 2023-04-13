@@ -2,6 +2,9 @@
 #include "voxelgrid.h"
 #include <iostream>
 #include <sstream>
+#include "json.hpp"
+
+
 //const std::string input_file = "../data/objs/Ifc2x3_weld.obj";
 //const std::string input_file = "../data/objs/AC90R1ifc.obj";
 
@@ -38,7 +41,7 @@ void mark_voxels_intersecting_triangle(const Triangle_3 &triangle, VoxelGrid &vo
 
 
 int main() {
-    const std::string input_file = "../data/objs/ifc1.obj";
+    const std::string input_file = "../data/objs/ifc3.obj";
 
     const float resolution = 0.1;
     std::ifstream input_stream;
@@ -59,9 +62,10 @@ int main() {
 
     bool first_object_read = false;
     int index = 1;
-
+    int count = 0;
     // 2. read data into memory
     if (input_stream.is_open()) {
+
         std::string line;
         while (std::getline(input_stream, line)) {
             if (line[0] == 'g') {//every g means a new object
@@ -91,6 +95,7 @@ int main() {
                 std::string temp;
                 ss >> temp >> v0 >> v1 >> v2;
                 current_shell.faces.push_back(Face(v0, v1, v2));
+                count++;
             }
             if (line[0] == 'v') {
                 double x,y,z;
@@ -117,7 +122,7 @@ int main() {
 
 
 
-    std::cout<<"Total number of Building objects: "<<objects.size()<<std::endl;
+    std::cout<<"Total number of faces "<<count<<std::endl;
     std::cout<<"Total number of vertices: "<<points.size()<<std::endl;
 
 
@@ -140,7 +145,7 @@ int main() {
     point_vector pts;
     Point3 origin(min_x - resolution, min_y - resolution, min_z - resolution);
 
-
+    int face_count = 0;
     for (auto const &object: objects) {
         for (auto const &shell: object.shells) {
             for (auto const &face: shell.faces) {
@@ -148,7 +153,9 @@ int main() {
                 Point3 v1 = points[face.vertices[1] - 1];
                 Point3 v2 = points[face.vertices[2] - 1];
                 Triangle_3 triangle(v0, v1, v2);
+                face_count++;
                 mark_voxels_intersecting_triangle(triangle, voxel_grid, origin, face.numeric_id);
+                std::cout<<face_count<<std::endl;
                     }
                 }
             }
@@ -213,6 +220,7 @@ int main() {
     voxel_grid.voxel_to_obj(buildings, origin, buil);
     voxel_grid.voxel_to_obj(exterior, origin, exte);
     voxel_grid.voxel_to_obj(interior, origin, inte);
+
 
 
 

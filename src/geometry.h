@@ -6,6 +6,7 @@
 #define HW3_GEOMETRY_H
 
 #include "definitions.h"
+#include "json.hpp"
 
 
 struct Face {
@@ -69,7 +70,47 @@ inline bool intersect(const double xmin, const double ymin, const double zmin, c
         return true;
     }
 }
+std::vector<Point3> get_coordinates(const json& j, bool translate) {
+    std::vector<Point3> lspts;
+    std::vector<std::vector<int>> lvertices = j["vertices"];
+    if (translate) {
+        for (auto& vi : lvertices) {
+            double x = (vi[0] * j["transform"]["scale"][0].get<double>()) + j["transform"]["translate"][0].get<double>();
+            double y = (vi[1] * j["transform"]["scale"][1].get<double>()) + j["transform"]["translate"][1].get<double>();
+            double z = (vi[2] * j["transform"]["scale"][2].get<double>()) + j["transform"]["translate"][2].get<double>();
+            lspts.push_back(Point3(x, y, z));
+        }
+    } else {
+        //-- do not translate, useful to keep the values low for downstream processing of data
+        for (auto& vi : lvertices) {
+            double x = (vi[0] * j["transform"]["scale"][0].get<double>());
+            double y = (vi[1] * j["transform"]["scale"][1].get<double>());
+            double z = (vi[2] * j["transform"]["scale"][2].get<double>());
+            lspts.push_back(Point3(x, y, z));
+        }
+    }
+    return lspts;
+}
 
+void write2city(std::string filename,const std::string& object_id){
+    json j;
+    j["type"] = "CityJSON";
+    j["version"] = "1.1";
+    j["transform"] = json::object();
+    j["transform"]["scale"] = json::array({1.0, 1.0, 1.0});
+    j["transform"]["translate"] = json::array({0.0, 0.0, 0.0});
+    j["CityObjects"][object_id] = json::object();
+    j["CityObjects"][object_id]["type"] = "Building";
+    j["CityObjects"][object_id]["children"] = json::array();
+    j["vertices"] = json::array();
+
+
+
+    std::string json_string = j.dump(2);
+    std::ofstream out_stream("mybuilding.json");
+    out_stream << json_string;
+    out_stream.close();
+}
 
 
 
