@@ -106,37 +106,37 @@ struct VoxelGrid {
     }
 
 
-    bool get_exterior_neighbour(unsigned int x,unsigned int y,unsigned int z,const VoxelGrid &voxel_grid)const{
+    bool get_exterior_neighbour(unsigned int x,unsigned int y,unsigned int z)const{
 
         unsigned int i = x + 1;
         unsigned int j = y + 1;
         unsigned int k = z + 1;
         //check its former three connected neighbour,if one of them is exterior,return true
         if(i<=max_x-1){
-            if(voxel_grid(i,y,z) == -1) { return true;}
+            if((*this)(i,y,z) == -1) { return true;}
         }
         if(j<=max_y-1){
-            if(voxel_grid(x,j,z) == -1) {return true;}
+            if((*this)(x,j,z) == -1) {return true;}
         }
         if(k<=max_z-1){
-            if(voxel_grid(x,y,k) == -1) { return true; }
+            if((*this)(x,y,k) == -1) { return true; }
         }
         return false;
     }
 
 
-    void mark_exterior(VoxelGrid &voxel_grid) {
+    void mark_exterior() {
         for(int i = max_x-1; i>=0; i--){
             for(int j = max_y-1; j>=0; j--){
                 for(int k = max_z-1; k>=0; k--){
                     if(i==max_x-1 && j==max_y-1 && k==max_z-1){ // mark the extra starting origin as exterior
-                        voxel_grid(max_x-1,max_y-1,max_z-1) = -1;
+                        (*this)(max_x-1,max_y-1,max_z-1) = -1;
                         ex_voxels.emplace_back(voxel_index(i, j, k));
                     }
                     else{
-                        if(voxel_grid(i,j,k)==0) {//make sure this is not building voxel
-                            if (get_exterior_neighbour(i, j, k, voxel_grid)) {
-                                voxel_grid(i, j, k) = -1;//if one of the neighbour is exterior,it's connected and is exterior too
+                        if((*this)(i,j,k)==0) {//make sure this is not building voxel
+                            if (get_exterior_neighbour(i, j, k)) {
+                                (*this)(i, j, k) = -1;//if one of the neighbour is exterior,it's connected and is exterior too
                                 ex_voxels.emplace_back(voxel_index(i, j, k));
                             }
                             else{
@@ -152,29 +152,58 @@ struct VoxelGrid {
         }
     }
 
-    void mark_room() {
-        std::list<unsigned int> marking;
-        marking.push_back(max_x*max_y*max_z-1);
+
+    void mark_room(const unsigned int start) {
+        std::deque<unsigned int> marking;
+        marking.push_back(start);
         while (!marking.empty()) {
             unsigned int idx = marking.front();
-            if (voxels[idx] != -1){
-                voxels[idx] = -1;
+            if (voxels[idx] == 0){
+                voxels[idx] = -2;
             }
             std::vector<unsigned int> coordinate = voxel_coordinates(idx);
             std::vector<unsigned int> neighbours = get_neighbour(coordinate[0], coordinate[1], coordinate[2], 0);
-            for (auto const &neighbour: neighbours) {
-                if (neighbour < voxels.size()) { // check if neighbour is within bounds
-                    voxels[neighbour] = -1;
-//                    std::cout << neighbour << std::endl;
-                    marking.push_back(neighbour);
-                } else {
-                    std::cout << "Neighbour index " << neighbour << " is out of bounds!" << std::endl;
-//                    continue;
+            if (!neighbours.empty()) {
+                for (auto const &neighbour: neighbours) {
+                    if (neighbour < voxels.size()) { // check if neighbour is within bounds
+                        voxels[neighbour] = -2;
+                        marking.push_back(neighbour);
+                    } else {
+                        continue;
+                    }
                 }
             }
             marking.pop_front();
         }
     }
+
+
+
+//    void mark_room(const unsigned int start) {
+//        std::list<unsigned int> marking;
+//        marking.push_back(start);
+//        while (!marking.empty()) {
+//            unsigned int idx = marking.front();
+//            if (voxels[idx] ==0){
+//                voxels[idx] = -2;
+//            }
+//            std::vector<unsigned int> coordinate = voxel_coordinates(idx);
+//            std::vector<unsigned int> neighbours = get_neighbour(coordinate[0], coordinate[1], coordinate[2], 0);
+//            if (!neighbours.empty()) {
+//                for (auto const &neighbour: neighbours) {
+//                    if (neighbour < voxels.size()) { // check if neighbour is within bounds
+//                        voxels[neighbour] = -2;
+//                    std::cout << neighbour << std::endl;
+//                        marking.push_back(neighbour);
+//                    } else {
+//                        continue;
+//                    }
+//                }
+//            }
+//            marking.pop_front();
+//        }
+//    }
+
 
 
     void voxel_to_obj(std::vector<unsigned int>& voxel_coords, const Point3& origin,
@@ -244,6 +273,8 @@ struct VoxelGrid {
         }
     }
 };
+
+
 
 
 #endif //HW3_VOXELGRID_H
