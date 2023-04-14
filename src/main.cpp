@@ -108,14 +108,6 @@ void polyhedron_to_json(const std::string &out_json_file, const Polyhedron &buil
 
 }
 
-//int main() {
-//
-//    const std::string input_file = "../data/objs/ifc1.obj";
-//    const bool export_building_voxel = false;
-//    const bool export_interior_voxel = false;
-//    const bool export_building_mesh = false;
-//    const bool export_rooms_mesh = false;
-//    const float resolution = 0.1;
 
 int main(int argc, char* argv[]) {
 
@@ -380,7 +372,7 @@ int main(int argc, char* argv[]) {
 
     int room_id = 1;
     for (auto const &room:voxel_grid.in_voxels) {
-        if (room.size() >= 5000) {    // filter out small rooms;
+        if (room.size() >= 3000) {    // filter out small rooms;
             std::vector<Point_with_normal> room_points;
             std::string room_point_file = "../data/reconstructed/pointcloud/room-" + std::to_string(room_id) + ".xyz";
             for (auto const &rp: room) {

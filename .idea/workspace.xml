@@ -21,7 +21,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8afc0499-117c-4609-96a9-c6ea5fdb54ab" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/hw3.dir/compiler_depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/hw3.dir/compiler_depend.make" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -55,7 +55,6 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
@@ -104,7 +103,7 @@
       <workItem from="1681491512564" duration="6955000" />
       <workItem from="1681499421500" duration="49000" />
       <workItem from="1681499942548" duration="10000" />
-      <workItem from="1681500736567" duration="652000" />
+      <workItem from="1681500736567" duration="973000" />
     </task>
     <servers />
   </component>
