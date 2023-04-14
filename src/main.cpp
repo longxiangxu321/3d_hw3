@@ -3,17 +3,162 @@
 #include <iostream>
 #include "poission_reconstruction.h"
 
+void polyhedron_to_json(const std::string &out_json_file, const Polyhedron &building_surface, const std::vector<Polyhedron> &rooms_surfaces) {
+    std::cout<<"writing to json ..." << std::endl;
+    json j;
+    j["type"] = "CityJSON";
+    j["version"] = "1.1";
+    j["transform"] = json::object();
+    j["transform"]["scale"] = json::array({1, 1, 1});
+    j["transform"]["translate"] = json::array({0.0, 0.0, 0.0});
+    j["CityObjects"] = json::object();
+
+    std::ofstream off_stream;
+    off_stream.open(out_json_file);
+    j["CityObjects"]["building-id1"]["type"] = "Building";
+    j["CityObjects"]["building-id1"]["geometry"][0]["lod"] = "3.0";
+    j["CityObjects"]["building-id1"]["geometry"][0]["type"] = "Solid";
+
+    std::vector<std::tuple<double, double, double>> all_vertices;
+    for (auto v = building_surface.vertices_begin(); v != building_surface.vertices_end(); ++v) {
+        double x = CGAL::to_double(v->point().x());
+        double y = CGAL::to_double(v->point().y());
+        double z = CGAL::to_double(v->point().z());
+        all_vertices.emplace_back(x, y, z);
+    }
+
+    std::vector<std::array<int, 3>> building_triangles;
+    for (auto f = building_surface.facets_begin(); f != building_surface.facets_end(); ++f) {
+        int id1 = std::distance(building_surface.vertices_begin(), f->halfedge()->vertex());
+        int id2 = std::distance(building_surface.vertices_begin(), f->halfedge()->next()->vertex());
+        int id3 = std::distance(building_surface.vertices_begin(), f->halfedge()->next()->next()->vertex());
+        building_triangles.push_back(std::array<int, 3>{id1, id2, id3});
+    }
+
+    std::vector<int> vertex_offset(rooms_surfaces.size());
+    int total_vertices = building_surface.size_of_vertices();
+    for (int i = 0; i < rooms_surfaces.size(); ++i) {
+        vertex_offset[i] = total_vertices;
+        for (auto v = rooms_surfaces[i].vertices_begin(); v != rooms_surfaces[i].vertices_end(); ++v) {
+            double x = CGAL::to_double(v->point().x());
+            double y = CGAL::to_double(v->point().y());
+            double z = CGAL::to_double(v->point().z());
+            all_vertices.emplace_back(x,y,z);
+        }
+        total_vertices += rooms_surfaces[i].size_of_vertices();
+    }
 
 
 
-int main() {
+    std::vector<std::vector<std::array<int, 3>>> rooms_triangles;
+    for (int i = 0; i < rooms_surfaces.size(); ++i) {
+        std::vector<std::array<int, 3>> room_triangles;
+        for (auto f = rooms_surfaces[i].facets_begin(); f != rooms_surfaces[i].facets_end(); ++f) {
+            int id1 = std::distance(rooms_surfaces[i].vertices_begin(), f->halfedge()->vertex()) + vertex_offset[i];
+            int id2 = std::distance(rooms_surfaces[i].vertices_begin(), f->halfedge()->next()->vertex()) + vertex_offset[i];
+            int id3 = std::distance(rooms_surfaces[i].vertices_begin(), f->halfedge()->next()->next()->vertex()) + vertex_offset[i];
+            room_triangles.push_back(std::array<int, 3>{id1, id2, id3});
+        }
+        rooms_triangles.emplace_back(room_triangles);
+    }
 
-    const std::string input_file = "../data/objs/ifc1.obj";
-    const bool export_building_voxel = false;
-    const bool export_interior_voxel = false;
-    const bool export_building_mesh = true;
-    const bool export_rooms_mesh = true;
-    const float resolution = 0.1;
+
+
+    // extract vertices
+    for (int i = 0; i < all_vertices.size(); i++) {
+        double x = std::get<0>(all_vertices[i]);
+        double y = std::get<1>(all_vertices[i]);
+        double z = std::get<2>(all_vertices[i]);
+        j["vertices"][i] = nlohmann::json::array({x, y, z});
+    }
+
+
+    // extract building faces
+    for (int i = 0; i < building_triangles.size(); i++) {
+        int f1, f2, f3;
+        f1 = building_triangles[i][0];
+        f2 = building_triangles[i][1];
+        f3 = building_triangles[i][2];
+        j["CityObjects"]["building-id1"]["geometry"][0]["boundaries"][0][i][0] = nlohmann::json::array({f1, f2, f3});
+
+        }
+
+    //extract room surfaces
+    for (int i = 0; i<rooms_triangles.size();i++) {
+        std::string room_id = "room-" + std::to_string(i);
+        j["CityObjects"][room_id]["type"] = "BuildingPart";
+        j["CityObjects"][room_id]["parents"][0] = "building-id1";
+        j["CityObjects"][room_id]["geometry"][0]["lod"] = "2.2";
+        j["CityObjects"][room_id]["geometry"][0]["type"] = "Solid";
+        j["CityObjects"]["building-id1"]["children"][i] = room_id;
+        for (int k = 0; k<rooms_triangles[i].size(); k++) {
+            int f1, f2, f3;
+            f1 = rooms_triangles[i][k][0];
+            f2 = rooms_triangles[i][k][1];
+            f3 = rooms_triangles[i][k][2];
+            j["CityObjects"][room_id]["geometry"][0]["boundaries"][0][k][0] = nlohmann::json::array({f1, f2, f3});
+        }
+    }
+
+    std::string json_string = j.dump(2);
+    std::ofstream out_stream(out_json_file);
+    std::cout<<"finished" << std::endl;
+    out_stream << json_string;
+    out_stream.close();
+
+}
+
+//int main() {
+//
+//    const std::string input_file = "../data/objs/ifc1.obj";
+//    const bool export_building_voxel = false;
+//    const bool export_interior_voxel = false;
+//    const bool export_building_mesh = false;
+//    const bool export_rooms_mesh = false;
+//    const float resolution = 0.1;
+
+int main(int argc, char* argv[]) {
+
+    std::string input_file = "../data/objs/ifc1.obj";
+    bool export_building_voxel = false;
+    bool export_interior_voxel = false;
+    bool export_building_mesh = false;
+    bool export_rooms_mesh = false;
+    float resolution = 0.1;
+
+    for (int i = 1; i < argc; i += 2) {
+        std::string arg = argv[i];
+        std::string val = argv[i + 1];
+
+        if (arg == "--input-file") {
+            input_file = val;
+        }
+        else if (arg == "--export-building-voxel") {
+            export_building_voxel = true;
+        }
+        else if (arg == "--export-interior-voxel") {
+            export_interior_voxel = true;
+        }
+        else if (arg == "--export-building-mesh") {
+            export_building_mesh = true;
+        }
+        else if (arg == "--export-rooms-mesh") {
+            export_rooms_mesh = true;
+        }
+        else if (arg == "--resolution") {
+            resolution = std::stof(val);
+        }
+        else {
+            std::cout << "Unknown argument: " << arg << std::endl;
+            return 1;
+        }
+    }
+
+    // Check for incomplete arguments
+    if (input_file.empty()) {
+        std::cout << "Input file not specified." << std::endl;
+        return 1;
+    }
 
     size_t pos = input_file.find_last_of("/");
     std::string file_name = input_file.substr(pos + 1);
@@ -224,9 +369,9 @@ int main() {
     }
     outfile.close();
 
-    Polyhedron building_result;
+    Polyhedron building_mesh;
     std::string building_mesh_file = "../data/reconstructed/mesh/building.off";
-    reconstruction(building_point_file, building_mesh_file, building_result, export_building_mesh);
+    reconstruction(building_point_file, building_mesh_file, building_mesh, export_building_mesh);
 
 
     std::vector<Polyhedron> rooms_meshes;
@@ -255,5 +400,7 @@ int main() {
     std::cout<<"building mesh " << 1 <<std::endl;
     std::cout<<"room meshes " << rooms_meshes.size()<<std::endl;
 
+    const std::string output_json = "../data/cityjson/" + fname_without_ext + "-buildingmodel.json";
+    polyhedron_to_json(output_json, building_mesh, rooms_meshes);
     return 0;
 }

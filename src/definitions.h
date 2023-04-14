@@ -37,9 +37,10 @@
 #include <CGAL/pca_estimate_normals.h>
 #include <CGAL/mst_orient_normals.h>
 #include <CGAL/property_map.h>
-
+#include "json.hpp"
 // Define a vector to store the output
 
+using json = nlohmann::json;
 
 //-- for mark_domain()
 struct FaceInfo2

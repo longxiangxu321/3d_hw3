@@ -3415,6 +3415,21 @@ CMakeFiles/hw3.dir/src/main.cpp.o
  /usr/include/boost/type_traits/is_bounded_array.hpp
  /usr/include/boost/type_traits/is_unbounded_array.hpp
  /usr/include/boost/graph/prim_minimum_spanning_tree.hpp
+ /mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3/src/json.hpp
+ /usr/include/c++/9/forward_list
+ /usr/include/c++/9/bits/forward_list.h
+ /usr/include/c++/9/bits/forward_list.tcc
+ /usr/include/c++/9/valarray
+ /usr/include/c++/9/bits/valarray_array.h
+ /usr/include/c++/9/bits/valarray_array.tcc
+ /usr/include/c++/9/bits/valarray_before.h
+ /usr/include/c++/9/bits/slice_array.h
+ /usr/include/c++/9/bits/valarray_after.h
+ /usr/include/c++/9/bits/gslice.h
+ /usr/include/c++/9/bits/gslice_array.h
+ /usr/include/c++/9/bits/mask_array.h
+ /usr/include/c++/9/bits/indirect_array.h
+ /usr/include/c++/9/version
  /mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3/src/voxelgrid.h
  /mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3/src/poission_reconstruction.h
 
