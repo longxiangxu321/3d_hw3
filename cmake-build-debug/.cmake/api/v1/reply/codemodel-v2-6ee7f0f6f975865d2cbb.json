@@ -38,7 +38,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "hw3::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-hw3-Release-d349c851294b0f44aa0f.json",
+					"jsonFile" : "target-hw3-Release-b5b8673451c4bb7db50e.json",
 					"name" : "hw3",
 					"projectIndex" : 0
 				}
@@ -48,8 +48,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3/cmake-build-debug",
-		"source" : "/mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3"
+		"build" : "/mnt/d/Q3/modelling/hw3/hw3/cmake-build-debug",
+		"source" : "/mnt/d/Q3/modelling/hw3/hw3"
 	},
 	"version" : 
 	{

@@ -128,9 +128,10 @@ int main(int argc, char* argv[]) {
 
     for (int i = 1; i < argc; i += 2) {
         std::string arg = argv[i];
-        std::string val = argv[i + 1];
+
 
         if (arg == "--input-file") {
+            std::string val = argv[i + 1];
             input_file = val;
         }
         else if (arg == "--export-building-voxel") {
@@ -146,6 +147,7 @@ int main(int argc, char* argv[]) {
             export_rooms_mesh = true;
         }
         else if (arg == "--resolution") {
+            std::string val = argv[i + 1];
             resolution = std::stof(val);
         }
         else {

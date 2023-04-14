@@ -211,7 +211,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3/cmake-build-debug"
+			"value" : "/mnt/d/Q3/modelling/hw3/hw3/cmake-build-debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -859,7 +859,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3"
+			"value" : "/mnt/d/Q3/modelling/hw3/hw3"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -1611,7 +1611,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3/cmake-build-debug"
+			"value" : "/mnt/d/Q3/modelling/hw3/hw3/cmake-build-debug"
 		},
 		{
 			"name" : "hw3_SOURCE_DIR",
@@ -1623,7 +1623,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3"
+			"value" : "/mnt/d/Q3/modelling/hw3/hw3"
 		}
 	],
 	"kind" : "cache",

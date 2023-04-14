@@ -1,8 +1,7 @@
 CMakeFiles/hw3.dir/src/main.cpp.o: \
- /mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3/src/main.cpp \
- /usr/include/stdc-predef.h \
- /mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3/src/geometry.h \
- /mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3/src/definitions.h \
+ /mnt/d/Q3/modelling/hw3/hw3/src/main.cpp /usr/include/stdc-predef.h \
+ /mnt/d/Q3/modelling/hw3/hw3/src/geometry.h \
+ /mnt/d/Q3/modelling/hw3/hw3/src/definitions.h \
  /usr/local/include/CGAL/Exact_predicates_inexact_constructions_kernel.h \
  /usr/local/include/CGAL/Simple_cartesian.h \
  /usr/local/include/CGAL/Cartesian/Cartesian_base.h \
@@ -3213,8 +3212,8 @@ CMakeFiles/hw3.dir/src/main.cpp.o: \
  /usr/include/boost/type_traits/is_bounded_array.hpp \
  /usr/include/boost/type_traits/is_unbounded_array.hpp \
  /usr/include/boost/graph/prim_minimum_spanning_tree.hpp \
- /mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3/src/json.hpp \
- /usr/include/c++/9/forward_list /usr/include/c++/9/bits/forward_list.h \
+ /mnt/d/Q3/modelling/hw3/hw3/src/json.hpp /usr/include/c++/9/forward_list \
+ /usr/include/c++/9/bits/forward_list.h \
  /usr/include/c++/9/bits/forward_list.tcc /usr/include/c++/9/valarray \
  /usr/include/c++/9/bits/valarray_array.h \
  /usr/include/c++/9/bits/valarray_array.tcc \
@@ -3224,5 +3223,5 @@ CMakeFiles/hw3.dir/src/main.cpp.o: \
  /usr/include/c++/9/bits/gslice.h /usr/include/c++/9/bits/gslice_array.h \
  /usr/include/c++/9/bits/mask_array.h \
  /usr/include/c++/9/bits/indirect_array.h /usr/include/c++/9/version \
- /mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3/src/voxelgrid.h \
- /mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3/src/poission_reconstruction.h
+ /mnt/d/Q3/modelling/hw3/hw3/src/voxelgrid.h \
+ /mnt/d/Q3/modelling/hw3/hw3/src/poission_reconstruction.h

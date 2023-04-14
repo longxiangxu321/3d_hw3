@@ -1,22 +1,22 @@
 Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
-Change Dir: /mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3/cmake-build-debug/CMakeFiles/CMakeTmp
+Change Dir: /mnt/d/Q3/modelling/hw3/hw3/cmake-build-debug/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/make -f Makefile cmTC_8c3e7/fast && /usr/bin/make  -f CMakeFiles/cmTC_8c3e7.dir/build.make CMakeFiles/cmTC_8c3e7.dir/build
-make[1]: Entering directory '/mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3/cmake-build-debug/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_8c3e7.dir/src.c.o
-/usr/bin/cc -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_8c3e7.dir/src.c.o -c /mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3/cmake-build-debug/CMakeFiles/CMakeTmp/src.c
-Linking C executable cmTC_8c3e7
-/usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8c3e7.dir/link.txt --verbose=1
-/usr/bin/cc CMakeFiles/cmTC_8c3e7.dir/src.c.o -o cmTC_8c3e7 
-/usr/bin/ld: CMakeFiles/cmTC_8c3e7.dir/src.c.o: in function `main':
+Run Build Command(s):/usr/bin/make -f Makefile cmTC_76239/fast && /usr/bin/make  -f CMakeFiles/cmTC_76239.dir/build.make CMakeFiles/cmTC_76239.dir/build
+make[1]: Entering directory '/mnt/d/Q3/modelling/hw3/hw3/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_76239.dir/src.c.o
+/usr/bin/cc -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_76239.dir/src.c.o -c /mnt/d/Q3/modelling/hw3/hw3/cmake-build-debug/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_76239
+/usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_76239.dir/link.txt --verbose=1
+/usr/bin/cc CMakeFiles/cmTC_76239.dir/src.c.o -o cmTC_76239 
+/usr/bin/ld: CMakeFiles/cmTC_76239.dir/src.c.o: in function `main':
 src.c:(.text+0x46): undefined reference to `pthread_create'
 /usr/bin/ld: src.c:(.text+0x52): undefined reference to `pthread_detach'
 /usr/bin/ld: src.c:(.text+0x5e): undefined reference to `pthread_cancel'
 /usr/bin/ld: src.c:(.text+0x6f): undefined reference to `pthread_join'
 collect2: error: ld returned 1 exit status
-make[1]: *** [CMakeFiles/cmTC_8c3e7.dir/build.make:99: cmTC_8c3e7] Error 1
-make[1]: Leaving directory '/mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3/cmake-build-debug/CMakeFiles/CMakeTmp'
-make: *** [Makefile:127: cmTC_8c3e7/fast] Error 2
+make[1]: *** [CMakeFiles/cmTC_76239.dir/build.make:99: cmTC_76239] Error 1
+make[1]: Leaving directory '/mnt/d/Q3/modelling/hw3/hw3/cmake-build-debug/CMakeFiles/CMakeTmp'
+make: *** [Makefile:127: cmTC_76239/fast] Error 2
 
 
 Source file was:

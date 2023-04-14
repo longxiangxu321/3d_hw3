@@ -1030,8 +1030,8 @@
 	"kind" : "cmakeFiles",
 	"paths" : 
 	{
-		"build" : "/mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3/cmake-build-debug",
-		"source" : "/mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3"
+		"build" : "/mnt/d/Q3/modelling/hw3/hw3/cmake-build-debug",
+		"source" : "/mnt/d/Q3/modelling/hw3/hw3"
 	},
 	"version" : 
 	{
