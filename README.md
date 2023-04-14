@@ -4,7 +4,7 @@ The code included processes IFC models. It extracts outer building envelope and 
 
 The code has these functionalities:
 
-- Read OBJ(for .obj with weld-vertices) file into memory, in the form of objects, shells, faces, and points
+- Read OBJ(for `.obj` with weld-vertices) file into memory, in the form of objects, shells, faces, and points
 - Create a voxel grid that bounds the building
 - Voxelize the building
 - Mark exterior voxels and room voxels
@@ -22,6 +22,10 @@ The code has these functionalities:
 
 The code has been tested on WSL2.
 
+Required software:
+
+- IfcConvert
+
 Required package:
 
 - CGAL
@@ -31,37 +35,52 @@ Required package:
 # Folder structure
 
 ```
-hw3
-  data
-    ifcs
-      IfcOpenHouse_IFC2x3.ifc
-      ...
-    objs
-        ifc1.obj
-        ...
-    reconstructed
-      mesh
-        building.off
-        ...
-      pointcloud
-        building.xyz
-        ...
-      voxels
-        ifc_bu.obj
-        ...
-  src
-    definitions.h
-    geometry.h
-    main.cpp
-    poission_reconstruction.h
-    voxelgrid.h
-  CMakeLists.txt
-  README.md
+.
+└── hw3/
+    ├── data/
+    │   ├── ifcs/
+    │   │   ├── IfcOpenHouse_IFC2x3.ifc
+    │   │   └── ...
+    │   ├── objs/
+    │   │   ├── ifc1.obj
+    │   │   └── ...
+    │   └── reconstructed/
+    │       ├── mesh/
+    │       │   ├── building.off
+    │       │   └── ...
+    │       ├── pointcloud/
+    │       │   ├── building.xyz
+    │       │   └── ...
+    │       └── voxels/
+    │           ├── ifc_bu.obj
+    │           └── ...
+    ├── src/
+    │   ├── definitions.h
+    │   ├── geometry.h
+    │   ├── main.cpp
+    │   ├── poission_reconstruction.h
+    │   └── voxelgrid.h
+    ├── CMakeLists.txt
+    └── README.md
 ```
 
 
 
 # Run
+
+First, use ifcConvert to convert `.ifc` into `.obj` file with following command:
+
+```
+.\IfcConvert.exe .\hw3\data\ifcs\model.ifc .\hw3\data\objs\ifc2x3.obj -j 11 --no-normals --weld-vertices --orient-shells --exclude+=entities IfcOpeningElement IfcBeam IfcColumns IfcObject --use-element-names
+```
+
+Note:
+
+- `--weld-vertices` is necessary, without it, obj file will not be correctly read
+- `-j 11` can be changed according to your cpu cores
+- details of other options can be find with `.\IfcConvert.exe --help`
+
+
 
 To compile and run:
 
@@ -69,7 +88,7 @@ To compile and run:
     $ cd build
     $ cmake ..
     $ make
-    $ ./hw02 myfile.city.json
+    $ ./hw3
 
 
 
@@ -77,6 +96,3 @@ To compile and run:
 
 
 
-```
-.\IfcConvert.exe .\hw3\data\ifcs\model.ifc .\hw3\data\objs\ifc2x3.obj -j 11 --no-normals --weld-vertices --orient-shells --exclude+=entities IfcOpeningElement IfcBeam IfcColumns IfcObject --use-element-names
-```
