@@ -100,11 +100,11 @@
 			[
 				{
 					"backtrace" : 3,
-					"path" : "/mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/3d_hw3-bs0412/include"
+					"path" : "/mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3/include"
 				},
 				{
 					"backtrace" : 6,
-					"path" : "/mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/3d_hw3-bs0412/cmake-build-debug"
+					"path" : "/mnt/d/Q3/modelling/hw3/3d_hw3-bs0412/hw3/cmake-build-debug"
 				},
 				{
 					"backtrace" : 2,

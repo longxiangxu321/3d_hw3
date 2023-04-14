@@ -209,6 +209,7 @@ struct VoxelGrid {
             for(int j = max_y-1; j>=0; j--){
                 for(int k = max_z-1; k>=0; k--){
                     if(i==max_x-1 && j==max_y-1 && k==max_z-1){ // mark the extra starting origin as exterior
+                        assert((*this)(i,j,k) == 0);
                         (*this)(max_x-1,max_y-1,max_z-1) = -1;
                         ex_voxels.emplace_back(voxel_index(i, j, k));
                     }

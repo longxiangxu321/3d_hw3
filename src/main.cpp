@@ -8,7 +8,7 @@
 
 int main() {
 
-    const std::string input_file = "../data/objs/ifc2.obj";
+    const std::string input_file = "../data/objs/ifc1.obj";
     const bool export_building_voxel = false;
     const bool export_interior_voxel = false;
     const bool export_building_mesh = true;
@@ -20,7 +20,6 @@ int main() {
     size_t ext_pos = file_name.find_last_of(".");
     std::string fname_without_ext = file_name.substr(0, ext_pos);
 
-    std::cout<<fname_without_ext <<std::endl;
 
 
 
@@ -196,17 +195,18 @@ int main() {
     std::cout<< "total voxel " << voxel_grid.voxels.size() << " " << exterior.size() + interior.size() + buildings.size() <<std::endl;
 
 
-
     if (export_building_voxel) {
         std::cout<< "exporting building voxel"<<std::endl;
         const std::string buil = "../data/voxels/" + fname_without_ext + "-buildingVoxel.obj";
         voxel_grid.voxel_to_obj(voxel_grid.buildings, buil);
+        std::cout<< "exporting building voxel done"<<std::endl;
     }
 
     if (export_interior_voxel) {
             std::cout<< "exporting interior voxel"<<std::endl;
             const std::string inside = "../data/voxels/" + fname_without_ext + "-interiorVoxel.obj";
             voxel_grid.voxel_to_obj(interior, inside);
+            std::cout<< "exporting interior voxel done"<<std::endl;
     }
 
 
@@ -228,15 +228,13 @@ int main() {
     std::string building_mesh_file = "../data/reconstructed/mesh/building.off";
     reconstruction(building_point_file, building_mesh_file, building_result, export_building_mesh);
 
-//    for (auto const &room:voxel_grid.in_voxels) {
-//            std::cout<<room.size()<<std::endl;
-//    }
+
     std::vector<Polyhedron> rooms_meshes;
 
     int room_id = 1;
     for (auto const &room:voxel_grid.in_voxels) {
-        std::vector<Point_with_normal> room_points;
         if (room.size() >= 5000) {    // filter out small rooms;
+            std::vector<Point_with_normal> room_points;
             std::string room_point_file = "../data/reconstructed/pointcloud/room-" + std::to_string(room_id) + ".xyz";
             for (auto const &rp: room) {
                 voxel_grid.get_room_surface_points(rp, room_points);
@@ -252,7 +250,9 @@ int main() {
             rooms_meshes.emplace_back(room_result);
             room_id++;
         }
+        else continue;
     }
+    std::cout<<"building mesh " << 1 <<std::endl;
     std::cout<<"room meshes " << rooms_meshes.size()<<std::endl;
 
     return 0;

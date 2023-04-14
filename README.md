@@ -78,5 +78,5 @@ To compile and run:
 
 
 ```
-.\IfcConvert.exe .\hw3\data\ifcs\model.ifc .\hw3\data\objs\ifc2x3.obj -j 11 --no-normals --weld-vertices --orient-shells --exclude+=entities IfcOpeningElement IfcBeam IfcColumns--use-element-names
+.\IfcConvert.exe .\hw3\data\ifcs\model.ifc .\hw3\data\objs\ifc2x3.obj -j 11 --no-normals --weld-vertices --orient-shells --exclude+=entities IfcOpeningElement IfcBeam IfcColumns IfcObject --use-element-names
 ```

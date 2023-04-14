@@ -9,7 +9,7 @@
 
 int reconstruction(const std::string &point_file, const std::string &mesh_file, Polyhedron &out_mesh, bool const &export_mesh) {
     std::vector<Point_with_normal> points1;
-    FT sm_angle = 30.0; // Min triangle angle in degrees.
+    FT sm_angle = 25.0; // Min triangle angle in degrees.
     FT sm_radius = 20; // Max triangle size w.r.t. point set average spacing.
     FT sm_distance = 0.175; // Surface Approximation error w.r.t. point set average spacing.
 
@@ -20,6 +20,7 @@ int reconstruction(const std::string &point_file, const std::string &mesh_file, 
         std::cerr << "Error: cannot read file input file!" << std::endl;
         return EXIT_FAILURE;
     }
+
     // Creates implicit function from the read points using the default solver.
     // Note: this method requires an iterator over points
     // + property maps to access each point's position and normal.
